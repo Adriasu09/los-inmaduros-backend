@@ -183,7 +183,7 @@ model Review {
   userId  String
 
   rating  Int
-  comment String @db.Text
+  comment String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -191,7 +191,7 @@ model Review {
   route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([routeId, userId])
+  @@unique([userId, routeId])
   @@map("reviews")
 }
 

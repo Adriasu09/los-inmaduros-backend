@@ -1,0 +1,133 @@
+### ========================================
+### VARIABLES
+### ========================================
+
+# Copia el ID de una ruta desde Supabase
+@routeId = 1381c681-6ca3-4b08-954a-8c7e7af06346
+
+# IDs de usuarios temporales para pruebas
+@userId1 = temp-user-123
+@userId2 = temp-user-456
+
+# Este lo obtendrás después de crear una review
+@reviewId = PEGA-AQUI-EL-ID-DE-LA-REVIEW
+
+### ========================================
+### HEALTH CHECK
+### ========================================
+
+### Health Check
+GET http://localhost:4000/health
+
+### ========================================
+### RUTAS
+### ========================================
+
+### Listar todas las rutas
+GET http://localhost:4000/api/routes
+
+### Ver una ruta específica
+GET http://localhost:4000/api/routes/heroes
+
+### ========================================
+### REVIEWS - VER
+### ========================================
+
+### Ver reviews de una ruta (debería estar vacío al inicio)
+GET http://localhost:4000/api/routes/{{routeId}}/reviews
+
+### ========================================
+### REVIEWS - CREAR
+### ========================================
+
+### Crear primera review (con comentario)
+POST http://localhost:4000/api/routes/{{routeId}}/reviews
+Content-Type: application/json
+
+{
+  "userId": "{{userId1}}",
+  "rating": 5,
+  "comment": "¡Ruta increíble! Muy recomendada para patinadores intermedios. Las vistas son espectaculares."
+}
+
+### Crear segunda review (sin comentario)
+POST http://localhost:4000/api/routes/{{routeId}}/reviews
+Content-Type: application/json
+
+{
+  "userId": "{{userId2}}",
+  "rating": 4
+}
+
+### Intentar crear review duplicada (debería fallar)
+POST http://localhost:4000/api/routes/{{routeId}}/reviews
+Content-Type: application/json
+
+{
+  "userId": "{{userId1}}",
+  "rating": 3,
+  "comment": "Esto debería fallar porque ya tengo una review"
+}
+
+### Crear review con rating inválido (debería fallar)
+POST http://localhost:4000/api/routes/{{routeId}}/reviews
+Content-Type: application/json
+
+{
+  "userId": "temp-user-789",
+  "rating": 6,
+  "comment": "Rating inválido (máximo 5)"
+}
+
+### ========================================
+### REVIEWS - EDITAR
+### ========================================
+
+### Editar una review (solo rating)
+PUT http://localhost:4000/api/reviews/{{reviewId}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId1}}",
+  "rating": 4
+}
+
+### Editar una review (rating y comentario)
+PUT http://localhost:4000/api/reviews/{{reviewId}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId1}}",
+  "rating": 5,
+  "comment": "Actualizo mi review: después de ir varias veces, confirmo que es excelente!"
+}
+
+### Intentar editar review de otro usuario (debería fallar)
+PUT http://localhost:4000/api/reviews/{{reviewId}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId2}}",
+  "rating": 1,
+  "comment": "No debería poder editar la review de otro usuario"
+}
+
+### ========================================
+### REVIEWS - ELIMINAR
+### ========================================
+
+### Eliminar una review (por el dueño)
+DELETE http://localhost:4000/api/reviews/{{reviewId}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId1}}"
+}
+
+### Intentar eliminar review de otro usuario (debería fallar)
+DELETE http://localhost:4000/api/reviews/{{reviewId}}
+Content-Type: application/json
+
+{
+  "userId": "{{userId2}}"
+}
