@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { envConfig } from './config/env.config';
+import { connectDatabase, prisma } from './database/prisma.client';
 
 // Crear la aplicación Express
 const app: Application = express();
@@ -20,16 +21,28 @@ app.use(express.urlencoded({ extended: true }));
 
 // ==================== RUTAS ====================
 
-// Ruta de prueba (Health check)
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({
-    status: 'OK',
-    message: 'Los Inmaduros Backend is running! 🛼',
-    timestamp: new Date().toISOString(),
-  });
+// Health check (ahora con verificación de DB)
+app.get('/health', async (req: Request, res: Response) => {
+  try {
+    // Verificar conexión a la base de datos
+    await prisma.$queryRaw`SELECT 1`;
+
+    res.status(200).json({
+      status: 'OK',
+      message: 'Los Inmaduros Backend is running! 🛼',
+      timestamp: new Date().toISOString(),
+      database: 'Connected ✅',
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Database connection failed',
+      database: 'Disconnected ❌',
+    });
+  }
 });
 
-// Ruta 404 - Cuando no se encuentra una ruta
+// Ruta 404
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     status: 'error',
@@ -40,16 +53,30 @@ app.use((req: Request, res: Response) => {
 // ==================== INICIAR SERVIDOR ====================
 const PORT = envConfig.port;
 
-app.listen(PORT, () => {
-  console.log(`
+async function startServer() {
+  try {
+    // Conectar a la base de datos
+    await connectDatabase();
+
+    // Iniciar servidor
+    app.listen(PORT, () => {
+      console.log(`
   ╔════════════════════════════════════════╗
-  ║   🛼 Los Inmaduros Backend Server      ║
+  ║   🛼 Los Inmaduros Backend Server   ║
   ╠════════════════════════════════════════╣
   ║   Port: ${PORT}                        ║
-  ║   Environment: ${envConfig.nodeEnv}    ║
+  ║   Environment: ${envConfig.nodeEnv}         ║
+  ║   Database: ✅ Connected               ║
   ║   Status: ✅ Running                   ║
   ╚════════════════════════════════════════╝
-  `);
-});
+      `);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 export default app;
