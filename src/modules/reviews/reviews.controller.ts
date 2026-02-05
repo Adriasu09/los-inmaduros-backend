@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ReviewsService } from "./reviews.service";
 import {
   createReviewSchema,
@@ -6,7 +6,6 @@ import {
   routeIdSchema,
   reviewIdSchema,
 } from "./reviews.validation";
-import { ZodError } from "zod";
 
 export class ReviewsController {
   private reviewsService: ReviewsService;
@@ -19,7 +18,7 @@ export class ReviewsController {
    * GET /api/routes/:routeId/reviews
    * Get all reviews for a route
    */
-  getRouteReviews = async (req: Request, res: Response) => {
+  getRouteReviews = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { routeId } = routeIdSchema.parse(req.params);
 
@@ -31,19 +30,7 @@ export class ReviewsController {
         count: reviews.length,
       });
     } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          success: false,
-          error: "Parámetros inválidos",
-          details: error.issues,
-        });
-      }
-
-      console.error("Error al obtener reviews:", error);
-      res.status(500).json({
-        success: false,
-        error: "Error al obtener las reviews",
-      });
+      next(error);
     }
   };
 
@@ -51,56 +38,28 @@ export class ReviewsController {
    * POST /api/routes/:routeId/reviews
    * Create a review
    */
-  createReview = async (req: Request, res: Response) => {
+  createReview = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { routeId } = routeIdSchema.parse(req.params);
       const validatedData = createReviewSchema.parse(req.body);
 
-      // TODO: Obtener userId desde el token de autenticación (Clerk)
-      // Por ahora usamos un ID de prueba
+      // TODO: Get userId from authentication token (Clerk)
+      // For now, using a test ID
       const userId = req.body.userId || "temp-user-id";
 
       const review = await this.reviewsService.createReview(
         routeId,
         userId,
-        validatedData,
+        validatedData
       );
 
       res.status(201).json({
         success: true,
         data: review,
-        message: "Review creada exitosamente",
+        message: "Review created successfully",
       });
     } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          success: false,
-          error: "Datos inválidos",
-          details: error.issues,
-        });
-      }
-
-      if (error instanceof Error) {
-        if (error.message === "Ruta no encontrada") {
-          return res.status(404).json({
-            success: false,
-            error: error.message,
-          });
-        }
-
-        if (error.message.includes("Ya has dejado una review")) {
-          return res.status(409).json({
-            success: false,
-            error: error.message,
-          });
-        }
-      }
-
-      console.error("Error al crear review:", error);
-      res.status(500).json({
-        success: false,
-        error: "Error al crear la review",
-      });
+      next(error);
     }
   };
 
@@ -108,55 +67,27 @@ export class ReviewsController {
    * PUT /api/reviews/:reviewId
    * Update a review
    */
-  updateReview = async (req: Request, res: Response) => {
+  updateReview = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { reviewId } = reviewIdSchema.parse(req.params);
       const validatedData = updateReviewSchema.parse(req.body);
 
-      // TODO: Obtener userId desde el token de autenticación
+      // TODO: Get userId from authentication token
       const userId = req.body.userId || "temp-user-id";
 
       const review = await this.reviewsService.updateReview(
         reviewId,
         userId,
-        validatedData,
+        validatedData
       );
 
       res.status(200).json({
         success: true,
         data: review,
-        message: "Review actualizada exitosamente",
+        message: "Review updated successfully",
       });
     } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          success: false,
-          error: "Datos inválidos",
-          details: error.issues,
-        });
-      }
-
-      if (error instanceof Error) {
-        if (error.message === "Review no encontrada") {
-          return res.status(404).json({
-            success: false,
-            error: error.message,
-          });
-        }
-
-        if (error.message.includes("No tienes permiso")) {
-          return res.status(403).json({
-            success: false,
-            error: error.message,
-          });
-        }
-      }
-
-      console.error("Error al actualizar review:", error);
-      res.status(500).json({
-        success: false,
-        error: "Error al actualizar la review",
-      });
+      next(error);
     }
   };
 
@@ -164,49 +95,21 @@ export class ReviewsController {
    * DELETE /api/reviews/:reviewId
    * Delete a review
    */
-  deleteReview = async (req: Request, res: Response) => {
+  deleteReview = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { reviewId } = reviewIdSchema.parse(req.params);
 
-      // TODO: Obtener userId desde el token de autenticación
+      // TODO: Get userId from authentication token
       const userId = req.body.userId || "temp-user-id";
 
       await this.reviewsService.deleteReview(reviewId, userId);
 
       res.status(200).json({
         success: true,
-        message: "Review eliminada exitosamente",
+        message: "Review deleted successfully",
       });
     } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          success: false,
-          error: "Parámetros inválidos",
-          details: error.issues,
-        });
-      }
-
-      if (error instanceof Error) {
-        if (error.message === "Review no encontrada") {
-          return res.status(404).json({
-            success: false,
-            error: error.message,
-          });
-        }
-
-        if (error.message.includes("No tienes permiso")) {
-          return res.status(403).json({
-            success: false,
-            error: error.message,
-          });
-        }
-      }
-
-      console.error("Error al eliminar review:", error);
-      res.status(500).json({
-        success: false,
-        error: "Error al eliminar la review",
-      });
+      next(error);
     }
   };
 }

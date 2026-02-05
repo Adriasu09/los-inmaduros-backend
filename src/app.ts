@@ -3,15 +3,21 @@ import cors from "cors";
 import { envConfig } from "./config/env.config";
 import { connectDatabase, prisma } from "./database/prisma.client";
 
-// Importar rutas
+// Import routes
 import routesRouter from "./modules/routes/routes.routes";
 import reviewsRouter from "./modules/reviews/reviews.routes";
 
-// Crear la aplicación Express
+// Import error middlewares
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./shared/middlewares/error.middleware";
+
+// Create Express application
 const app: Application = express();
 
 // ==================== MIDDLEWARES ====================
-// CORS - Permitir peticiones desde el frontend
+// CORS - Allow requests from frontend
 app.use(
   cors({
     origin: envConfig.frontendUrl,
@@ -19,16 +25,16 @@ app.use(
   }),
 );
 
-// Body parser - Para leer JSON en las peticiones
+// Body parser - To read JSON in requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ==================== RUTAS ====================
+// ==================== ROUTES ====================
 
-// Health check (ahora con verificación de DB)
+// Health check (with DB verification)
 app.get("/health", async (req: Request, res: Response) => {
   try {
-    // Verificar conexión a la base de datos
+    // Verify database connection
     await prisma.$queryRaw`SELECT 1`;
 
     res.status(200).json({
@@ -46,28 +52,27 @@ app.get("/health", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Rutas de la API
+// API routes
 app.use("/api/routes", routesRouter);
-app.use("/api/routes", reviewsRouter); // Reviews anidadas: /api/routes/:routeId/reviews
-app.use("/api/reviews", reviewsRouter); // Reviews directas: /api/reviews/:reviewId
+app.use("/api/routes", reviewsRouter); // Nested reviews: /api/routes/:routeId/reviews
+app.use("/api/reviews", reviewsRouter); // Direct reviews: /api/reviews/:reviewId
 
-// Ruta 404
-app.use((req: Request, res: Response) => {
-  res.status(404).json({
-    status: "error",
-    message: "Route not found",
-  });
-});
+// ==================== ERROR HANDLING ====================
+// 404 handler - Must be after all routes
+app.use(notFoundHandler);
 
-// ==================== INICIAR SERVIDOR ====================
+// Global error handler - Must be the last middleware
+app.use(errorHandler);
+
+// ==================== START SERVER ====================
 const PORT = envConfig.port;
 
 async function startServer() {
   try {
-    // Conectar a la base de datos
+    // Connect to database
     await connectDatabase();
 
-    // Iniciar servidor
+    // Start server
     app.listen(PORT, () => {
       console.log(`
   ╔════════════════════════════════════════╗

@@ -1,4 +1,5 @@
 import { prisma } from "../../database/prisma.client";
+import { NotFoundError } from "../../shared/custom-errors";
 
 export class RoutesService {
   /**
@@ -54,7 +55,7 @@ export class RoutesService {
     });
 
     if (!route) {
-      throw new Error("Ruta no encontrada");
+      throw new NotFoundError("Route not found");
     }
 
     return route;

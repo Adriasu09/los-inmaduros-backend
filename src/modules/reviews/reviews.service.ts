@@ -1,4 +1,9 @@
 import { prisma } from "../../database/prisma.client";
+import {
+  NotFoundError,
+  ConflictError,
+  ForbiddenError,
+} from "../../shared/custom-errors";
 import { CreateReviewInput, UpdateReviewInput } from "./reviews.validation";
 
 export class ReviewsService {
@@ -25,14 +30,16 @@ export class ReviewsService {
    * Create a review
    */
   async createReview(routeId: string, userId: string, data: CreateReviewInput) {
+    // Verify route exists
     const route = await prisma.route.findUnique({
       where: { id: routeId },
     });
 
     if (!route) {
-      throw new Error("Ruta no encontrada");
+      throw new NotFoundError("Route not found");
     }
 
+    // Check if user already reviewed this route
     const existingReview = await prisma.review.findFirst({
       where: {
         userId: userId,
@@ -41,7 +48,7 @@ export class ReviewsService {
     });
 
     if (existingReview) {
-      throw new Error("Ya has dejado una review en esta ruta");
+      throw new ConflictError("You have already reviewed this route");
     }
 
     return await prisma.review.create({
@@ -75,16 +82,18 @@ export class ReviewsService {
     userId: string,
     data: UpdateReviewInput,
   ) {
+    // Find review
     const review = await prisma.review.findUnique({
       where: { id: reviewId },
     });
 
     if (!review) {
-      throw new Error("Review no encontrada");
+      throw new NotFoundError("Review not found");
     }
 
+    // Check ownership
     if (review.userId !== userId) {
-      throw new Error("No tienes permiso para editar esta review");
+      throw new ForbiddenError("You don't have permission to edit this review");
     }
 
     return await prisma.review.update({
@@ -109,16 +118,20 @@ export class ReviewsService {
    * Delete a review
    */
   async deleteReview(reviewId: string, userId: string) {
+    // Find review
     const review = await prisma.review.findUnique({
       where: { id: reviewId },
     });
 
     if (!review) {
-      throw new Error("Review no encontrada");
+      throw new NotFoundError("Review not found");
     }
 
+    // Check ownership
     if (review.userId !== userId) {
-      throw new Error("No tienes permiso para eliminar esta review");
+      throw new ForbiddenError(
+        "You don't have permission to delete this review",
+      );
     }
 
     await prisma.review.delete({
