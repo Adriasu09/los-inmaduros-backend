@@ -12,7 +12,7 @@ export class RoutesController {
 
   /**
    * GET /api/routes
-   * Obtener todas las rutas
+   * Get all routes
    */
   getAllRoutes = async (req: Request, res: Response) => {
     try {
@@ -47,7 +47,7 @@ export class RoutesController {
 
   /**
    * GET /api/routes/:slug
-   * Obtener una ruta por slug
+   * Get a route by slug
    */
   getRouteBySlug = async (req: Request, res: Response) => {
     try {

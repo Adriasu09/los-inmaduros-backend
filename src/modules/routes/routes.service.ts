@@ -2,7 +2,7 @@ import { prisma } from "../../database/prisma.client";
 
 export class RoutesService {
   /**
-   * Obtener todas las rutas
+   * Get all routes
    */
   async getAllRoutes() {
     return await prisma.route.findMany({
@@ -21,7 +21,7 @@ export class RoutesService {
   }
 
   /**
-   * Obtener una ruta por slug
+   * Get a route by slug
    */
   async getRouteBySlug(slug: string) {
     const route = await prisma.route.findUnique({
@@ -61,7 +61,7 @@ export class RoutesService {
   }
 
   /**
-   * Calcular rating promedio de una ruta
+   * Calculate average rating for a route
    */
   async getRouteAverageRating(routeId: string): Promise<number> {
     const result = await prisma.review.aggregate({

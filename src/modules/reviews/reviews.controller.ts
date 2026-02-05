@@ -17,7 +17,7 @@ export class ReviewsController {
 
   /**
    * GET /api/routes/:routeId/reviews
-   * Obtener todas las reviews de una ruta
+   * Get all reviews for a route
    */
   getRouteReviews = async (req: Request, res: Response) => {
     try {
@@ -49,7 +49,7 @@ export class ReviewsController {
 
   /**
    * POST /api/routes/:routeId/reviews
-   * Crear una review
+   * Create a review
    */
   createReview = async (req: Request, res: Response) => {
     try {
@@ -106,7 +106,7 @@ export class ReviewsController {
 
   /**
    * PUT /api/reviews/:reviewId
-   * Actualizar una review
+   * Update a review
    */
   updateReview = async (req: Request, res: Response) => {
     try {
@@ -162,7 +162,7 @@ export class ReviewsController {
 
   /**
    * DELETE /api/reviews/:reviewId
-   * Eliminar una review
+   * Delete a review
    */
   deleteReview = async (req: Request, res: Response) => {
     try {
