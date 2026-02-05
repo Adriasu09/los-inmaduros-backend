@@ -7,9 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==================== MODELOS ====================
+// ==================== MODELS ====================
 
-// Usuario
+// User
 model User {
   id       String   @id @default(uuid())
   clerkId  String   @unique
@@ -22,8 +22,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones
-  organizedRouteCalls RouteCall[] // Rutas que organiza
+  organizedRouteCalls RouteCall[] // Tours organized by the user
   reviews             Review[]
   favorites           Favorite[]
   attendances         Attendance[]
@@ -37,7 +36,7 @@ enum UserRole {
   ADMIN
 }
 
-// Ruta predefinida (las 17 rutas)
+// Predefined route (all 17 routes)
 model Route {
   id                  String       @id @default(uuid())
   name                String
@@ -52,8 +51,7 @@ model Route {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones
-  routeCalls RouteCall[] // Convocatorias que usan esta ruta
+  routeCalls RouteCall[] // Calls that use this route
   reviews    Review[]
   favorites  Favorite[]
   photos     Photo[]
@@ -68,91 +66,91 @@ enum RouteLevel {
   EXPERT
 }
 
-// Convocatoria de ruta (REFACTORIZADO)
+// Call for route proposals
 model RouteCall {
   id String @id @default(uuid())
 
-  // Ruta: Puede ser predefinida O nueva (custom)
-  routeId         String? // ← Opcional: Si es NULL = ruta nueva
-  customRouteName String? // ← Solo si routeId es NULL
+  // Route: Can be predefined OR new (custom)
+  routeId         String? // ← Optional: If NULL = new path
+  customRouteName String? // ← Only if routeId is NULL
 
-  // Organizador
+  // Organizer
   organizerId String
 
-  // Detalles de la convocatoria
-  title       String? // ← Opcional (por si quieren un título custom)
-  description String? @db.Text // Comentarios importantes
-  image       String? // ← Imagen de la convocatoria
+  // Details of the call for applications
+  title       String? // ← Optional (if they want a custom title)
+  description String? @db.Text // Important comments
+  image       String? // ← Call image
 
-  // Fecha y hora
-  dateRoute DateTime // Fecha y hora de inicio
+  // Date and time
+  dateRoute DateTime // Start date and time
 
-  // Ritmo (tus ritmos personalizados)
+  // Pace (your custom paces)
   pace RoutePace
 
-  // Estado
+  // Status
   status RouteCallStatus @default(SCHEDULED)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones
+  // Relations
   route         Route?         @relation(fields: [routeId], references: [id], onDelete: SetNull)
   organizer     User           @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   attendances   Attendance[]
-  meetingPoints MeetingPoint[] // ← Múltiples puntos de encuentro
+  meetingPoints MeetingPoint[] // ← Multiple meeting points
 
   @@map("route_calls")
 }
 
-// Ritmo personalizado de Los Inmaduros
+// Los Inmaduros custom pace
 enum RoutePace {
-  ROCA // 🪨 Nivel Roca
-  CARACOL // 🐌 Nivel Caracol
-  GUSANO // 🐛 Nivel Gusano
-  MARIPOSA // 🦋 Nivel Mariposa
-  EXPERIMENTADO // 🚀 Nivel Experimentado
-  LOCURA_TOTAL // ☠️ Nivel Locura total
-  MIAUCORNIA // 🐈🦄 Nivel Miaucornia
+  ROCA // 🪨 Rock Level
+  CARACOL // 🐌 Snail Level
+  GUSANO // 🐛 Worm Level
+  MARIPOSA // 🦋 Butterfly Level
+  EXPERIMENTADO // 🚀 Experienced Level
+  LOCURA_TOTAL // ☠️ Total Madness Level
+  MIAUCORNIA // 🐈🦄 Miaucornia Level
 }
 
 enum RouteCallStatus {
-  SCHEDULED // Programada
-  ONGOING // En curso
-  COMPLETED // Completada
-  CANCELLED // Cancelada
+  SCHEDULED // Scheduled
+  ONGOING // Ongoing
+  COMPLETED // Completed
+  CANCELLED // Cancelled
 }
 
-// Puntos de encuentro (NUEVO MODELO)
+// Meeting points (NEW MODEL)
 model MeetingPoint {
   id          String @id @default(uuid())
   routeCallId String
 
-  // Tipo de punto
-  type MeetingPointType @default(PRIMARY) // Principal o secundario
+  // Point type
+  type MeetingPointType @default(PRIMARY) // Primary or secondary
 
-  // Ubicación
-  name       String // "Puerta de Alcalá", "Explanada", "Otro"
-  customName String? // Solo si name = "Otro"
-  location   String? // URL de Google Maps
+  // Location
+  name       String // "Puerta de Alcalá", "Explanada", "Other"
+  customName String? // Only if name = "Other"
+  location   String? // Google Maps URL
 
-  // Hora (solo para puntos secundarios)
-  time DateTime? // Hora del punto secundario
+  // Time (only for secondary points)
+  time DateTime? // Secondary point time
 
   createdAt DateTime @default(now())
 
-  // Relación
+  // Relation
   routeCall RouteCall @relation(fields: [routeCallId], references: [id], onDelete: Cascade)
 
   @@map("meeting_points")
 }
 
 enum MeetingPointType {
-  PRIMARY // Punto principal
-  SECONDARY // Punto secundario
+  PRIMARY // Primary point
+  SECONDARY // Secondary point
 }
 
-// Asistencia a una convocatoria
+// Attendance to a call
 model Attendance {
   id          String @id @default(uuid())
   routeCallId String
@@ -163,7 +161,7 @@ model Attendance {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relaciones
+  // Relations
   routeCall RouteCall @relation(fields: [routeCallId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -176,7 +174,7 @@ enum AttendanceStatus {
   CANCELLED
 }
 
-// Review de una ruta
+// Route review
 model Review {
   id      String @id @default(uuid())
   routeId String
@@ -195,7 +193,7 @@ model Review {
   @@map("reviews")
 }
 
-// Favoritos
+// Favorites
 model Favorite {
   id      String @id @default(uuid())
   routeId String
@@ -210,7 +208,7 @@ model Favorite {
   @@map("favorites")
 }
 
-// Galería de fotos
+// Photo gallery
 model Photo {
   id      String  @id @default(uuid())
   routeId String?

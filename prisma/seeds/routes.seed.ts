@@ -2,7 +2,7 @@ import { PrismaClient, RouteLevel } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Función para mapear niveles antiguos a nuevos
+// Function to map old levels to new ones
 function mapLevel(oldLevel: string): RouteLevel {
   const levelMap: Record<string, RouteLevel> = {
     Básico: "BEGINNER",
@@ -14,16 +14,16 @@ function mapLevel(oldLevel: string): RouteLevel {
   return levelMap[oldLevel] || "INTERMEDIATE";
 }
 
-// Función para generar slug desde el nombre
+// Function to generate slug from name
 function generateSlug(name: string): string {
   return name
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Eliminar acentos
-    .replace(/[^a-z0-9\s-]/g, "") // Solo letras, números, espacios y guiones
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, "-") // Espacios a guiones
-    .replace(/-+/g, "-"); // Múltiples guiones a uno
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 }
 
 const routesData = [
@@ -220,11 +220,11 @@ async function seedRoutes() {
   console.log("🌱 Iniciando seed de rutas...");
 
   try {
-    // Borrar rutas existentes (opcional, solo para desarrollo)
+    // Delete existing routes (optional, for development only)
     await prisma.route.deleteMany();
     console.log("🗑️  Rutas anteriores eliminadas");
 
-    // Insertar las 17 rutas
+    // Insert the 17 routes
     for (const route of routesData) {
       const slug = generateSlug(route.name);
       const levels = route.level.map(mapLevel);
@@ -253,5 +253,4 @@ async function seedRoutes() {
   }
 }
 
-// Ejecutar el seed
 seedRoutes();

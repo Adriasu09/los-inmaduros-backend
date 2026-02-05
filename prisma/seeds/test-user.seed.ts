@@ -6,7 +6,7 @@ async function seedTestUser() {
   console.log("🌱 Creando usuario de prueba...");
 
   try {
-    // Verificar si ya existe
+    // Check if it already exists
     const existingUser = await prisma.user.findUnique({
       where: { clerkId: "test-clerk-id-123" },
     });
@@ -16,7 +16,7 @@ async function seedTestUser() {
       return existingUser;
     }
 
-    // Crear usuario de prueba
+    // Create test user
     const testUser = await prisma.user.create({
       data: {
         clerkId: "test-clerk-id-123",
