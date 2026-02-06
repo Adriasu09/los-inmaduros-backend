@@ -131,3 +131,27 @@ Content-Type: application/json
 {
   "userId": "{{userId2}}"
 }
+
+### ==================== FAVORITES ====================
+
+### Get all favorites for user
+GET http://localhost:4000/api/favorites?userId=temp-user-id
+
+### Check if route is favorite
+GET http://localhost:4000/api/favorites/check/{{routeId}}?userId=temp-user-id
+
+### Add route to favorites
+POST http://localhost:4000/api/routes/{{routeId}}/favorites
+Content-Type: application/json
+
+{
+  "userId": "temp-user-id"
+}
+
+### Remove route from favorites
+DELETE http://localhost:4000/api/routes/{{routeId}}/favorites
+Content-Type: application/json
+
+{
+  "userId": "temp-user-id"
+}
