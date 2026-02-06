@@ -7,8 +7,16 @@ export const RouteLevelEnum = z.enum([
   "EXPERT",
 ]);
 
-export const routeSlugSchema = z.object({
-  slug: z.string().min(1, "El slug es requerido"),
+export type RouteLevel = z.infer<typeof RouteLevelEnum>;
+
+/**
+ * Schema for validating route slug parameter
+ * Used with validation middleware
+ */
+export const getRouteBySlugSchema = z.object({
+  params: z.object({
+    slug: z.string().min(1, "Slug is required"),
+  }),
 });
 
-export type RouteLevel = z.infer<typeof RouteLevelEnum>;
+export type GetRouteBySlugInput = z.infer<typeof getRouteBySlugSchema>;

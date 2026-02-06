@@ -6,6 +6,7 @@ import { connectDatabase, prisma } from "./database/prisma.client";
 // Import routes
 import routesRouter from "./modules/routes/routes.routes";
 import reviewsRouter from "./modules/reviews/reviews.routes";
+import reviewsNestedRouter from "./modules/reviews/reviews.nested.routes";
 
 // Import error middlewares
 import {
@@ -22,7 +23,7 @@ app.use(
   cors({
     origin: envConfig.frontendUrl,
     credentials: true,
-  }),
+  })
 );
 
 // Body parser - To read JSON in requests
@@ -54,8 +55,8 @@ app.get("/health", async (req: Request, res: Response) => {
 
 // API routes
 app.use("/api/routes", routesRouter);
-app.use("/api/routes", reviewsRouter); // Nested reviews: /api/routes/:routeId/reviews
-app.use("/api/reviews", reviewsRouter); // Direct reviews: /api/reviews/:reviewId
+app.use("/api/routes/:routeId/reviews", reviewsNestedRouter); // Nested reviews under routes
+app.use("/api/reviews", reviewsRouter); // Direct reviews operations
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes

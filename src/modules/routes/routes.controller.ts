@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { RoutesService } from "./routes.service";
-import { routeSlugSchema } from "./routes.validation";
 
 export class RoutesController {
   private routesService: RoutesService;
@@ -21,13 +20,13 @@ export class RoutesController {
       const routesWithRating = await Promise.all(
         routes.map(async (route) => {
           const averageRating = await this.routesService.getRouteAverageRating(
-            route.id
+            route.id,
           );
           return {
             ...route,
             averageRating: Number(averageRating.toFixed(1)),
           };
-        })
+        }),
       );
 
       res.status(200).json({
@@ -44,14 +43,18 @@ export class RoutesController {
    * GET /api/routes/:slug
    * Get a route by slug
    */
-  getRouteBySlug = async (req: Request, res: Response, next: NextFunction) => {
+  getRouteBySlug = async (
+    req: Request<{ slug: string }>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
-      // Validate parameters
-      const { slug } = routeSlugSchema.parse(req.params);
+      // No need to validate - middleware already did it
+      const { slug } = req.params;
 
       const route = await this.routesService.getRouteBySlug(slug);
       const averageRating = await this.routesService.getRouteAverageRating(
-        route.id
+        route.id,
       );
 
       res.status(200).json({

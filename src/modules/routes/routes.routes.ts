@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { RoutesController } from "./routes.controller";
+import { validate } from "../../shared/middlewares/validation.middleware";
+import { getRouteBySlugSchema } from "./routes.validation";
 
 const router = Router();
 const routesController = new RoutesController();
@@ -16,6 +18,6 @@ router.get("/", routesController.getAllRoutes);
  * @desc    Get a route by slug
  * @access  Public
  */
-router.get("/:slug", routesController.getRouteBySlug);
+router.get("/:slug", validate(getRouteBySlugSchema), routesController.getRouteBySlug);
 
 export default router;

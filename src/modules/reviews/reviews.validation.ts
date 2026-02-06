@@ -1,37 +1,67 @@
 import { z } from "zod";
 
-export const createReviewSchema = z.object({
+/**
+ * Schema for creating a review
+ */
+const createReviewBodySchema = z.object({
   rating: z
     .number()
-    .int("El rating debe ser un número entero")
-    .min(1, "El rating mínimo es 1")
-    .max(5, "El rating máximo es 5"),
+    .int("Rating must be an integer")
+    .min(1, "Minimum rating is 1")
+    .max(5, "Maximum rating is 5"),
   comment: z
     .string()
-    .max(500, "El comentario no puede tener más de 500 caracteres")
+    .max(500, "Comment cannot exceed 500 characters")
     .optional(),
+});
+
+/**
+ * Schema for updating a review
+ */
+const updateReviewBodySchema = z.object({
+  rating: z
+    .number()
+    .int("Rating must be an integer")
+    .min(1, "Minimum rating is 1")
+    .max(5, "Maximum rating is 5")
+    .optional(),
+  comment: z
+    .string()
+    .max(500, "Comment cannot exceed 500 characters")
+    .optional(),
+});
+
+/**
+ * Complete schemas for use with validation middleware
+ */
+export const getRouteReviewsSchema = z.object({
+  params: z.object({
+    routeId: z.string().uuid("Must be a valid UUID"),
+  }),
+});
+
+export const createReviewSchema = z.object({
+  params: z.object({
+    routeId: z.string().uuid("Must be a valid UUID"),
+  }),
+  body: createReviewBodySchema,
 });
 
 export const updateReviewSchema = z.object({
-  rating: z
-    .number()
-    .int("El rating debe ser un número entero")
-    .min(1, "El rating mínimo es 1")
-    .max(5, "El rating máximo es 5")
-    .optional(),
-  comment: z
-    .string()
-    .max(500, "El comentario no puede tener más de 500 caracteres")
-    .optional(),
+  params: z.object({
+    reviewId: z.string().uuid("Must be a valid UUID"),
+  }),
+  body: updateReviewBodySchema,
 });
 
-export const routeIdSchema = z.object({
-  routeId: z.string().uuid("Debe ser un UUID válido"),
+export const deleteReviewSchema = z.object({
+  params: z.object({
+    reviewId: z.string().uuid("Must be a valid UUID"),
+  }),
 });
 
-export const reviewIdSchema = z.object({
-  reviewId: z.string().uuid("Debe ser un UUID válido"),
-});
-
-export type CreateReviewInput = z.infer<typeof createReviewSchema>;
-export type UpdateReviewInput = z.infer<typeof updateReviewSchema>;
+/**
+ * Types
+ */
+export type CreateReviewInput = z.infer<typeof createReviewBodySchema>;
+export type UpdateReviewInput = z.infer<typeof updateReviewBodySchema>;
