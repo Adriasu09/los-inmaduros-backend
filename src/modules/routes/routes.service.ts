@@ -1,5 +1,5 @@
 import { prisma } from "../../database/prisma.client";
-import { NotFoundError } from "../../shared/custom-errors";
+import { NotFoundError } from "../../shared/errors/custom-errors";
 
 export class RoutesService {
   /**

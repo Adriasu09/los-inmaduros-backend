@@ -3,7 +3,7 @@ import {
   NotFoundError,
   ConflictError,
   ForbiddenError,
-} from "../../shared/custom-errors";
+} from "../../shared/errors/custom-errors";
 import { CreateReviewInput, UpdateReviewInput } from "./reviews.validation";
 
 export class ReviewsService {

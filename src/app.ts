@@ -9,6 +9,8 @@ import reviewsRouter from "./modules/reviews/reviews.routes";
 import reviewsNestedRouter from "./modules/reviews/reviews.nested.routes";
 import favoritesRouter from "./modules/favorites/favorites.routes";
 import favoritesNestedRouter from "./modules/favorites/favorites.nested.routes";
+import configRouter from "./modules/config/config.routes";
+import routeCallsRouter from "./modules/route-calls/route-calls.routes";
 
 // Import error middlewares
 import {
@@ -61,6 +63,8 @@ app.use("/api/routes/:routeId/reviews", reviewsNestedRouter); // Nested reviews 
 app.use("/api/reviews", reviewsRouter); // Direct reviews operations
 app.use("/api/routes/:routeId/favorites", favoritesNestedRouter); // Nested favorites under routes
 app.use("/api/favorites", favoritesRouter); // Direct favorites operations
+app.use("/api/config", configRouter); // Configuration constants
+app.use("/api/route-calls", routeCallsRouter); // Route calls management
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes

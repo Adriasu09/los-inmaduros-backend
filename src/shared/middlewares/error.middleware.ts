@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
-import { AppError } from "../custom-errors";
+import { AppError } from "../errors/custom-errors";
 
 /**
  * Global error handling middleware

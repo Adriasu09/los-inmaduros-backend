@@ -2,7 +2,7 @@ import { prisma } from "../../database/prisma.client";
 import {
   NotFoundError,
   ConflictError,
-} from "../../shared/custom-errors";
+} from "../../shared/errors/custom-errors";
 
 export class FavoritesService {
   /**
