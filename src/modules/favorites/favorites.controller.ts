@@ -20,8 +20,7 @@ export class FavoritesController {
     try {
       const { routeId } = req.params;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const favorite = await this.favoritesService.addFavorite(userId, routeId);
 
@@ -47,8 +46,7 @@ export class FavoritesController {
     try {
       const { routeId } = req.params;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       await this.favoritesService.removeFavorite(userId, routeId);
 
@@ -71,8 +69,7 @@ export class FavoritesController {
     next: NextFunction,
   ) => {
     try {
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.query as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const favorites = await this.favoritesService.getUserFavorites(userId);
 
@@ -98,8 +95,7 @@ export class FavoritesController {
     try {
       const { routeId } = req.params;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.query as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const isFavorite = await this.favoritesService.checkIsFavorite(
         userId,

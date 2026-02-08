@@ -5,6 +5,7 @@ import {
   getRouteReviewsSchema,
   createReviewSchema,
 } from "./reviews.validation";
+import { requireAuth } from "../../shared/middlewares/auth.middleware";
 
 const router = Router({ mergeParams: true });
 const reviewsController = new ReviewsController();
@@ -18,13 +19,22 @@ const reviewsController = new ReviewsController();
  * @desc    Get all reviews for a specific route
  * @access  Public
  */
-router.get("/", validate(getRouteReviewsSchema), reviewsController.getRouteReviews);
+router.get(
+  "/",
+  validate(getRouteReviewsSchema),
+  reviewsController.getRouteReviews,
+);
 
 /**
  * @route   POST /api/routes/:routeId/reviews
  * @desc    Create a review for a specific route
  * @access  Private (requires authentication)
  */
-router.post("/", validate(createReviewSchema), reviewsController.createReview);
+router.post(
+  "/",
+  requireAuth,
+  validate(createReviewSchema),
+  reviewsController.createReview,
+);
 
 export default router;

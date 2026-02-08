@@ -20,8 +20,7 @@ export class RouteCallsController {
     try {
       const validatedData = req.body as CreateRouteCallInput;
 
-      // TODO: Get userId and role from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const routeCall = await this.routeCallsService.createRouteCall(
         userId,
@@ -95,8 +94,7 @@ export class RouteCallsController {
       const id = req.params.id as string;
       const validatedData = req.body as UpdateRouteCallInput;
 
-      // TODO: Get userId from authentication token
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const routeCall = await this.routeCallsService.updateRouteCall(
         id,
@@ -122,9 +120,8 @@ export class RouteCallsController {
     try {
       const id = req.params.id as string;
 
-      // TODO: Get userId and role from authentication token
-      const userId = (req.body as any).userId || "temp-user-id";
-      const userRole = (req.body as any).userRole || "USER";
+      const userId = req.auth!.userId;
+      const userRole = req.auth!.role;
 
       const routeCall = await this.routeCallsService.cancelRouteCall(
         id,
@@ -150,9 +147,8 @@ export class RouteCallsController {
     try {
       const id = req.params.id as string;
 
-      // TODO: Get userId and role from authentication token
-      const userId = (req.body as any).userId || "temp-user-id";
-      const userRole = (req.body as any).userRole || "USER";
+      const userId = req.auth!.userId;
+      const userRole = req.auth!.role;
 
       await this.routeCallsService.deleteRouteCall(id, userId, userRole);
 

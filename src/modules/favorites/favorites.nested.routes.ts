@@ -5,6 +5,7 @@ import {
   addFavoriteSchema,
   removeFavoriteSchema,
 } from "./favorites.validation";
+import { requireAuth } from "../../shared/middlewares/auth.middleware";
 
 const router = Router({ mergeParams: true });
 const favoritesController = new FavoritesController();
@@ -18,7 +19,12 @@ const favoritesController = new FavoritesController();
  * @desc    Add a route to favorites
  * @access  Private (requires authentication)
  */
-router.post("/", validate(addFavoriteSchema), favoritesController.addFavorite);
+router.post(
+  "/",
+  requireAuth,
+  validate(addFavoriteSchema),
+  favoritesController.addFavorite,
+);
 
 /**
  * @route   DELETE /api/routes/:routeId/favorites
@@ -27,6 +33,7 @@ router.post("/", validate(addFavoriteSchema), favoritesController.addFavorite);
  */
 router.delete(
   "/",
+  requireAuth,
   validate(removeFavoriteSchema),
   favoritesController.removeFavorite,
 );

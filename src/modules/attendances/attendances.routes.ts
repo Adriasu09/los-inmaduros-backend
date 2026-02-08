@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { AttendancesController } from "./attendances.controller";
+import { requireAuth } from "../../shared/middlewares/auth.middleware";
 
 const router = Router();
 const attendancesController = new AttendancesController();
@@ -9,6 +10,10 @@ const attendancesController = new AttendancesController();
  * @desc    Get all attendances for the authenticated user
  * @access  Private (requires authentication)
  */
-router.get("/my-attendances", attendancesController.getUserAttendances);
+router.get(
+  "/my-attendances",
+  requireAuth,
+  attendancesController.getUserAttendances,
+);
 
 export default router;

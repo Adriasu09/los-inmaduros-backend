@@ -1,9 +1,8 @@
 import { Router } from "express";
 import { FavoritesController } from "./favorites.controller";
 import { validate } from "../../shared/middlewares/validation.middleware";
-import {
-  checkFavoriteSchema,
-} from "./favorites.validation";
+import { checkFavoriteSchema } from "./favorites.validation";
+import { requireAuth } from "../../shared/middlewares/auth.middleware";
 
 const router = Router();
 const favoritesController = new FavoritesController();
@@ -13,7 +12,7 @@ const favoritesController = new FavoritesController();
  * @desc    Get all favorites for the authenticated user
  * @access  Private (requires authentication)
  */
-router.get("/", favoritesController.getUserFavorites);
+router.get("/", requireAuth, favoritesController.getUserFavorites);
 
 /**
  * @route   GET /api/favorites/check/:routeId
@@ -22,6 +21,7 @@ router.get("/", favoritesController.getUserFavorites);
  */
 router.get(
   "/check/:routeId",
+  requireAuth,
   validate(checkFavoriteSchema),
   favoritesController.checkIsFavorite,
 );

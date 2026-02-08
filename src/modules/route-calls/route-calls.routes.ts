@@ -9,6 +9,10 @@ import {
   cancelRouteCallSchema,
   deleteRouteCallSchema,
 } from "./route-calls.validation";
+import {
+  requireAuth,
+  requireAdmin,
+} from "../../shared/middlewares/auth.middleware";
 
 const router = Router();
 const routeCallsController = new RouteCallsController();
@@ -20,6 +24,7 @@ const routeCallsController = new RouteCallsController();
  */
 router.post(
   "/",
+  requireAuth,
   validate(createRouteCallSchema),
   routeCallsController.createRouteCall,
 );
@@ -53,6 +58,7 @@ router.get(
  */
 router.put(
   "/:id",
+  requireAuth,
   validate(updateRouteCallSchema),
   routeCallsController.updateRouteCall,
 );
@@ -64,6 +70,7 @@ router.put(
  */
 router.patch(
   "/:id/cancel",
+  requireAuth,
   validate(cancelRouteCallSchema),
   routeCallsController.cancelRouteCall,
 );
@@ -75,6 +82,7 @@ router.patch(
  */
 router.delete(
   "/:id",
+  requireAuth,
   validate(deleteRouteCallSchema),
   routeCallsController.deleteRouteCall,
 );

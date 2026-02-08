@@ -11,6 +11,10 @@ import {
   rejectPhotoSchema,
   approvePhotoSchema,
 } from "./photos.validation";
+import {
+  requireAuth,
+  requireAdmin,
+} from "../../shared/middlewares/auth.middleware";
 
 const router = Router();
 const photosController = new PhotosController();
@@ -20,7 +24,12 @@ const photosController = new PhotosController();
  * @desc    Upload a photo
  * @access  Private (context-based permissions)
  */
-router.post("/", validate(uploadPhotoSchema), photosController.uploadPhoto);
+router.post(
+  "/",
+  requireAuth,
+  validate(uploadPhotoSchema),
+  photosController.uploadPhoto,
+);
 
 /**
  * @route   GET /api/photos
@@ -34,14 +43,19 @@ router.get("/", validate(getPhotosSchema), photosController.getPhotos);
  * @desc    Get user's own photos (all statuses)
  * @access  Private
  */
-router.get("/my-photos", photosController.getUserPhotos);
+router.get("/my-photos", requireAuth, photosController.getUserPhotos);
 
 /**
  * @route   GET /api/photos/pending-review
  * @desc    Get pending photos for admin review
  * @access  Private (admin only)
  */
-router.get("/pending-review", photosController.getPendingPhotos);
+router.get(
+  "/pending-review",
+  requireAuth,
+  requireAdmin,
+  photosController.getPendingPhotos,
+);
 
 /**
  * @route   PATCH /api/photos/:id/approve
@@ -50,6 +64,8 @@ router.get("/pending-review", photosController.getPendingPhotos);
  */
 router.patch(
   "/:id/approve",
+  requireAuth,
+  requireAdmin,
   validate(approvePhotoSchema),
   photosController.approvePhoto,
 );
@@ -61,6 +77,8 @@ router.patch(
  */
 router.patch(
   "/:id/reject",
+  requireAuth,
+  requireAdmin,
   validate(rejectPhotoSchema),
   photosController.rejectPhoto,
 );
@@ -72,6 +90,7 @@ router.patch(
  */
 router.delete(
   "/:id",
+  requireAuth,
   validate(deletePhotoSchema),
   photosController.deletePhoto,
 );
@@ -105,6 +124,7 @@ router.get(
  */
 router.patch(
   "/route-calls/:id/cover-photo",
+  requireAuth,
   validate(updateCoverPhotoSchema),
   photosController.updateCoverPhoto,
 );

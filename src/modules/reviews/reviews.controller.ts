@@ -46,9 +46,7 @@ export class ReviewsController {
       const { routeId } = req.params;
       const validatedData = req.body;
 
-      // TODO: Get userId from authentication token (Clerk)
-      // For now, using a test ID from body or default
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const review = await this.reviewsService.createReview(
         routeId,
@@ -79,8 +77,7 @@ export class ReviewsController {
       const { reviewId } = req.params;
       const validatedData = req.body;
 
-      // TODO: Get userId from authentication token
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const review = await this.reviewsService.updateReview(
         reviewId,
@@ -110,8 +107,7 @@ export class ReviewsController {
     try {
       const { reviewId } = req.params;
 
-      // TODO: Get userId from authentication token
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       await this.reviewsService.deleteReview(reviewId, userId);
 

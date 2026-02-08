@@ -20,8 +20,7 @@ export class AttendancesController {
     try {
       const routeCallId = req.params.routeCallId as string;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const attendance = await this.attendancesService.confirmAttendance(
         userId,
@@ -50,8 +49,7 @@ export class AttendancesController {
     try {
       const routeCallId = req.params.routeCallId as string;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const attendance = await this.attendancesService.cancelAttendance(
         userId,
@@ -103,8 +101,7 @@ export class AttendancesController {
     next: NextFunction,
   ) => {
     try {
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.query as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const attendances =
         await this.attendancesService.getUserAttendances(userId);

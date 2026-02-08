@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ReviewsController } from "./reviews.controller";
 import { validate } from "../../shared/middlewares/validation.middleware";
 import { updateReviewSchema, deleteReviewSchema } from "./reviews.validation";
+import { requireAuth } from "../../shared/middlewares/auth.middleware";
 
 const router = Router();
 const reviewsController = new ReviewsController();
@@ -15,13 +16,23 @@ const reviewsController = new ReviewsController();
  * @desc    Update a review (only the owner can edit)
  * @access  Private (only the user who created it)
  */
-router.put("/:reviewId", validate(updateReviewSchema), reviewsController.updateReview);
+router.put(
+  "/:reviewId",
+  requireAuth,
+  validate(updateReviewSchema),
+  reviewsController.updateReview,
+);
 
 /**
  * @route   DELETE /api/reviews/:reviewId
  * @desc    Delete a review (the owner or an admin)
  * @access  Private (user owner or ADMIN)
  */
-router.delete("/:reviewId", validate(deleteReviewSchema), reviewsController.deleteReview);
+router.delete(
+  "/:reviewId",
+  requireAuth,
+  validate(deleteReviewSchema),
+  reviewsController.deleteReview,
+);
 
 export default router;

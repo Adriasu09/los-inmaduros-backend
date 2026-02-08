@@ -6,6 +6,7 @@ import {
   cancelAttendanceSchema,
   getRouteCallAttendancesSchema,
 } from "./attendances.validation";
+import { requireAuth } from "../../shared/middlewares/auth.middleware";
 
 const router = Router({ mergeParams: true });
 const attendancesController = new AttendancesController();
@@ -17,6 +18,7 @@ const attendancesController = new AttendancesController();
  */
 router.post(
   "/",
+  requireAuth,
   validate(confirmAttendanceSchema),
   attendancesController.confirmAttendance,
 );
@@ -28,6 +30,7 @@ router.post(
  */
 router.delete(
   "/",
+  requireAuth,
   validate(cancelAttendanceSchema),
   attendancesController.cancelAttendance,
 );

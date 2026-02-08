@@ -17,8 +17,7 @@ export class PhotosController {
     try {
       const validatedData = req.body as UploadPhotoInput;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const photo = await this.photosService.uploadPhoto(userId, validatedData);
 
@@ -45,8 +44,7 @@ export class PhotosController {
       const routeCallId = req.params.id as string;
       const validatedData = req.body as UpdateCoverPhotoInput;
 
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const photo = await this.photosService.updateCoverPhoto(
         userId,
@@ -137,8 +135,7 @@ export class PhotosController {
    */
   getUserPhotos = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // TODO: Get userId from authentication token (Clerk)
-      const userId = (req.query as any).userId || "temp-user-id";
+      const userId = req.auth!.userId;
 
       const photos = await this.photosService.getUserPhotos(userId);
 
@@ -185,8 +182,7 @@ export class PhotosController {
       const photoId = req.params.id as string;
       const { moderationNotes } = req.body;
 
-      // TODO: Get adminId from authentication token (Clerk)
-      const adminId = (req.body as any).userId || "temp-admin-id";
+      const adminId = req.auth!.userId;
 
       const photo = await this.photosService.rejectPhoto(
         adminId,
@@ -235,9 +231,8 @@ export class PhotosController {
     try {
       const photoId = req.params.id as string;
 
-      // TODO: Get userId and role from authentication token (Clerk)
-      const userId = (req.body as any).userId || "temp-user-id";
-      const userRole = (req.body as any).userRole || "USER";
+      const userId = req.auth!.userId;
+      const userRole = req.auth!.role;
 
       await this.photosService.deletePhoto(userId, userRole, photoId);
 

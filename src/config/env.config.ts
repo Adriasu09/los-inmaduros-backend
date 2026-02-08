@@ -1,47 +1,36 @@
 import dotenv from "dotenv";
 
-// Load environment variables
 dotenv.config();
 
-/**
- * Validate and parse environment variables
- */
-const getPort = (): number => {
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+export const PORT = getPort();
+export const DATABASE_URL = process.env.DATABASE_URL;
+export const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
+export const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
+function getPort(): number {
+  const port = parseInt(process.env.PORT || "4000", 10);
   if (isNaN(port)) {
-    throw new Error(`Invalid PORT value: ${process.env.PORT}`);
+    throw new Error("PORT must be a valid number");
   }
-
   return port;
-};
+}
 
-/**
- * Validate required environment variables
- */
-const validateEnv = () => {
-  const required = ["DATABASE_URL"];
-  const missing = required.filter((key) => !process.env[key]);
+export function validateEnv(): void {
+  const requiredEnvVars = [
+    "DATABASE_URL",
+    "CLERK_SECRET_KEY",
+    "CLERK_PUBLISHABLE_KEY",
+  ];
 
-  if (missing.length > 0) {
+  const missingVars = requiredEnvVars.filter(
+    (varName) => !process.env[varName],
+  );
+
+  if (missingVars.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missing.join(", ")}`,
+      `Missing required environment variables: ${missingVars.join(", ")}`,
     );
   }
-};
 
-// Validate on startup
-validateEnv();
-
-export const envConfig = {
-  port: getPort(),
-  nodeEnv: process.env.NODE_ENV || "development",
-  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
-  database: {
-    url: process.env.DATABASE_URL!,
-  },
-  supabase: {
-    url: process.env.SUPABASE_URL || "",
-    anonKey: process.env.SUPABASE_ANON_KEY || "",
-  },
-};
+  console.log("✅ Environment variables validated successfully");
+}
