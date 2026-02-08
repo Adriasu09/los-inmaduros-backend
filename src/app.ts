@@ -14,6 +14,7 @@ import {
   routeCallsRouter,
   attendancesRouter,
   attendancesNestedRouter,
+  photosRouter,
 } from "./modules";
 
 // Import error middlewares
@@ -69,8 +70,9 @@ app.use("/api/routes/:routeId/favorites", favoritesNestedRouter); // Nested favo
 app.use("/api/favorites", favoritesRouter); // Direct favorites operations
 app.use("/api/config", configRouter); // Configuration constants
 app.use("/api/route-calls", routeCallsRouter); // Route calls management
-app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter); // ← NUEVO
-app.use("/api/attendances", attendancesRouter); // ← NUEVO
+app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter); // Nested attendances under route calls
+app.use("/api/attendances", attendancesRouter); // Direct attendances operations
+app.use("/api/photos", photosRouter); // Photos management
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes

@@ -26,7 +26,8 @@ model User {
   reviews             Review[]
   favorites           Favorite[]
   attendances         Attendance[]
-  uploadedPhotos      Photo[]
+  uploadedPhotos      Photo[]      @relation("UploadedPhotos")
+  moderatedPhotos     Photo[]      @relation("ModeratedPhotos")
 
   @@map("users")
 }
@@ -99,6 +100,7 @@ model RouteCall {
   organizer     User           @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   attendances   Attendance[]
   meetingPoints MeetingPoint[]
+  photos        Photo[]
 
   @@map("route_calls")
 }
@@ -210,19 +212,50 @@ model Favorite {
 
 // Photo gallery
 model Photo {
-  id      String  @id @default(uuid())
-  routeId String?
-  userId  String
+  id String @id @default(uuid())
 
-  imageUrl   String
-  caption    String? @db.Text
-  isApproved Boolean @default(false)
+  // Context - determines moderation rules
+  context PhotoContext @default(ROUTE_GALLERY)
 
+  // References (context-dependent)
+  routeId     String? // For ROUTE_GALLERY
+  routeCallId String? // For ROUTE_CALL_COVER and ROUTE_CALL_GALLERY
+
+  // Ownership
+  userId String
+
+  // Content
+  imageUrl String
+  caption  String? @db.Text
+
+  // Moderation
+  status          PhotoStatus @default(ACTIVE)
+  moderatedAt     DateTime?
+  moderatedBy     String? // Admin user ID
+  moderationNotes String?     @db.Text
+
+  // Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  route Route? @relation(fields: [routeId], references: [id], onDelete: SetNull)
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relations
+  route     Route?     @relation(fields: [routeId], references: [id], onDelete: SetNull)
+  routeCall RouteCall? @relation(fields: [routeCallId], references: [id], onDelete: SetNull)
+  user      User       @relation("UploadedPhotos", fields: [userId], references: [id], onDelete: Cascade)
+  moderator User?      @relation("ModeratedPhotos", fields: [moderatedBy], references: [id], onDelete: SetNull)
 
   @@map("photos")
+}
+
+enum PhotoContext {
+  ROUTE_CALL_COVER // Cover photo for a route call
+  ROUTE_GALLERY // Gallery for a predefined route
+  ROUTE_CALL_GALLERY // Gallery for a specific route call event
+}
+
+enum PhotoStatus {
+  ACTIVE // Visible publicly
+  FLAGGED // Reported by users
+  REJECTED // Rejected by admin
+  DELETED // Soft deleted
 }

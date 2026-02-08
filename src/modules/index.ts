@@ -8,3 +8,4 @@ export { default as configRouter } from "./config/config.routes";
 export { default as routeCallsRouter } from "./route-calls/route-calls.routes";
 export { default as attendancesRouter } from "./attendances/attendances.routes";
 export { default as attendancesNestedRouter } from "./attendances/attendances.nested.routes";
+export { default as photosRouter } from "./photos/photos.routes";
