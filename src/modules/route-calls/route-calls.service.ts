@@ -11,7 +11,7 @@ import {
 
 // Default image for custom routes without image
 const DEFAULT_ROUTE_CALL_IMAGE =
-  "https://res.cloudinary.com/dj4j3uoia/image/upload/v1726855799/otraRuta_az0ggq.jpg";
+  "https://images.unsplash.com/photo-1564783436897-4c044a6d9c56?w=800";
 
 export class RouteCallsService {
   /**
@@ -32,13 +32,16 @@ export class RouteCallsService {
         throw new NotFoundError("Route not found");
       }
 
-      // Use route's name as title
+      // Use route's name as title (ignore provided title for predefined routes)
       title = route.name;
       // Use route's image as default (can be overridden by data.image)
       image = data.image || route.image;
     } else {
-      // Custom route: use customRouteName as title
-      title = data.customRouteName!;
+      // Custom route: title is required
+      if (!data.title) {
+        throw new BadRequestError("Title is required for custom routes");
+      }
+      title = data.title;
       // Use provided image or default placeholder
       image = data.image || DEFAULT_ROUTE_CALL_IMAGE;
     }
@@ -47,7 +50,6 @@ export class RouteCallsService {
     const routeCall = await prisma.routeCall.create({
       data: {
         routeId: data.routeId || null,
-        customRouteName: data.customRouteName || null,
         organizerId,
         title: title,
         description: data.description || null,

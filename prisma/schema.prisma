@@ -67,19 +67,19 @@ enum RouteLevel {
 }
 
 // Call for route proposals
+// Call for route proposals
 model RouteCall {
   id String @id @default(uuid())
 
-  // Route: Can be predefined OR new (custom)
-  routeId         String? // ← Optional: If NULL = new path
-  customRouteName String? // ← Only if routeId is NULL
+  // Route: Can be predefined OR custom (new)
+  routeId String? // ← Optional: If NULL = custom route
 
   // Organizer
   organizerId String
 
-  // Details of the call for applications
-  title       String? // ← Optional (if they want a custom title)
-  description String? @db.Text // Important comments
+  // Details
+  title       String // ← Always required (auto-generated or user-provided)
+  description String? @db.Text
   image       String? // ← Call image
 
   // Date and time
@@ -98,7 +98,7 @@ model RouteCall {
   route         Route?         @relation(fields: [routeId], references: [id], onDelete: SetNull)
   organizer     User           @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   attendances   Attendance[]
-  meetingPoints MeetingPoint[] // ← Multiple meeting points
+  meetingPoints MeetingPoint[]
 
   @@map("route_calls")
 }

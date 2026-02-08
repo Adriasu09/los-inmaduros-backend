@@ -38,13 +38,15 @@ const meetingPointSchema = z.object({
  */
 const createRouteCallBodySchema = z
   .object({
-    // Route: predefined OR custom
+    // Route: predefined (routeId) OR custom (no routeId)
     routeId: z.string().uuid("Must be a valid UUID").optional(),
-    customRouteName: z
+
+    // Title: required for custom routes, auto-generated for predefined
+    title: z
       .string()
-      .min(1, "Custom route name is required")
-      .max(200, "Custom route name too long")
-      .optional(),
+      .min(1, "Title is required")
+      .max(200, "Title too long")
+      .optional(), // Optional in validation, but logic will require it for custom
 
     // Details
     description: z.string().max(1000, "Description too long").optional(),
@@ -74,14 +76,13 @@ const createRouteCallBodySchema = z
         return secondaryCount <= 1;
       }, "Only one SECONDARY meeting point is allowed"),
   })
-  .refine(
-    (data) => data.routeId || data.customRouteName,
-    "Either routeId or customRouteName must be provided",
-  )
-  .refine(
-    (data) => !(data.routeId && data.customRouteName),
-    "Cannot provide both routeId and customRouteName",
-  );
+  .refine((data) => {
+    // If no routeId (custom route), title is required
+    if (!data.routeId && !data.title) {
+      return false;
+    }
+    return true;
+  }, "Title is required for custom routes");
 
 /**
  * Schema for updating a route call
