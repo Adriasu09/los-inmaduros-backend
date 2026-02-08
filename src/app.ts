@@ -4,13 +4,17 @@ import { envConfig } from "./config/env.config";
 import { connectDatabase, prisma } from "./database/prisma.client";
 
 // Import routes
-import routesRouter from "./modules/routes/routes.routes";
-import reviewsRouter from "./modules/reviews/reviews.routes";
-import reviewsNestedRouter from "./modules/reviews/reviews.nested.routes";
-import favoritesRouter from "./modules/favorites/favorites.routes";
-import favoritesNestedRouter from "./modules/favorites/favorites.nested.routes";
-import configRouter from "./modules/config/config.routes";
-import routeCallsRouter from "./modules/route-calls/route-calls.routes";
+import {
+  routesRouter,
+  reviewsRouter,
+  reviewsNestedRouter,
+  favoritesRouter,
+  favoritesNestedRouter,
+  configRouter,
+  routeCallsRouter,
+  attendancesRouter,
+  attendancesNestedRouter,
+} from "./modules";
 
 // Import error middlewares
 import {
@@ -65,6 +69,8 @@ app.use("/api/routes/:routeId/favorites", favoritesNestedRouter); // Nested favo
 app.use("/api/favorites", favoritesRouter); // Direct favorites operations
 app.use("/api/config", configRouter); // Configuration constants
 app.use("/api/route-calls", routeCallsRouter); // Route calls management
+app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter); // ← NUEVO
+app.use("/api/attendances", attendancesRouter); // ← NUEVO
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes
