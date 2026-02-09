@@ -1,6 +1,6 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { envConfig } from "./config/env.config";
+import { PORT, validateEnv } from "./config/env.config";
 import { connectDatabase, prisma } from "./database/prisma.client";
 
 // Import routes
@@ -23,6 +23,9 @@ import {
   notFoundHandler,
 } from "./shared/middlewares/error.middleware";
 
+// Validate environment variables
+validateEnv();
+
 // Create Express application
 const app: Application = express();
 
@@ -30,7 +33,7 @@ const app: Application = express();
 // CORS - Allow requests from frontend
 app.use(
   cors({
-    origin: envConfig.frontendUrl,
+    origin: "*", // You can change this to your frontend URL later
     credentials: true,
   }),
 );
@@ -64,15 +67,15 @@ app.get("/health", async (req: Request, res: Response) => {
 
 // API routes
 app.use("/api/routes", routesRouter);
-app.use("/api/routes/:routeId/reviews", reviewsNestedRouter); // Nested reviews under routes
-app.use("/api/reviews", reviewsRouter); // Direct reviews operations
-app.use("/api/routes/:routeId/favorites", favoritesNestedRouter); // Nested favorites under routes
-app.use("/api/favorites", favoritesRouter); // Direct favorites operations
-app.use("/api/config", configRouter); // Configuration constants
-app.use("/api/route-calls", routeCallsRouter); // Route calls management
-app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter); // Nested attendances under route calls
-app.use("/api/attendances", attendancesRouter); // Direct attendances operations
-app.use("/api/photos", photosRouter); // Photos management
+app.use("/api/routes/:routeId/reviews", reviewsNestedRouter);
+app.use("/api/reviews", reviewsRouter);
+app.use("/api/routes/:routeId/favorites", favoritesNestedRouter);
+app.use("/api/favorites", favoritesRouter);
+app.use("/api/config", configRouter);
+app.use("/api/route-calls", routeCallsRouter);
+app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter);
+app.use("/api/attendances", attendancesRouter);
+app.use("/api/photos", photosRouter);
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes
@@ -82,8 +85,6 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ==================== START SERVER ====================
-const PORT = envConfig.port;
-
 async function startServer() {
   try {
     // Connect to database
@@ -96,7 +97,7 @@ async function startServer() {
   ║   🛼 Los Inmaduros Backend Server   ║
   ╠════════════════════════════════════════╣
   ║   Port: ${PORT}                        ║
-  ║   Environment: ${envConfig.nodeEnv}         ║
+  ║   Environment: development             ║
   ║   Database: ✅ Connected               ║
   ║   Status: ✅ Running                   ║
   ╚════════════════════════════════════════╝

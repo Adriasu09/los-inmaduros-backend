@@ -41,7 +41,7 @@ export class RoutesService {
           orderBy: { createdAt: "desc" },
         },
         photos: {
-          where: { isApproved: true },
+          where: { status: "ACTIVE" },
           orderBy: { createdAt: "desc" },
           take: 20,
         },
