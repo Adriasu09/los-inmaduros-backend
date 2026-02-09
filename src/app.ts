@@ -15,6 +15,7 @@ import {
   attendancesRouter,
   attendancesNestedRouter,
   photosRouter,
+  authRouter,
 } from "./modules";
 
 // Import error middlewares
@@ -76,6 +77,7 @@ app.use("/api/route-calls", routeCallsRouter);
 app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter);
 app.use("/api/attendances", attendancesRouter);
 app.use("/api/photos", photosRouter);
+app.use("/api/auth", authRouter); //TODO: (SOLO PARA DESARROLLO)
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes

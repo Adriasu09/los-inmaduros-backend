@@ -1,157 +1,141 @@
-### ========================================
-### VARIABLES
-### ========================================
+### Variables
+@baseURL = http://localhost:4000/api
+@token = sess_39RfAIwdCo6uI5RLIihiReZa4Sg
 
-# Copia el ID de una ruta desde Supabase
-@routeId = 1381c681-6ca3-4b08-954a-8c7e7af06346
+### ==============================================
+### AUTH - Get Test Token (DEVELOPMENT ONLY)
+### ==============================================
 
-# IDs de usuarios temporales para pruebas
-@userId1 = temp-user-123
-@userId2 = temp-user-456
-
-# Este lo obtendrás después de crear una review
-@reviewId = PEGA-AQUI-EL-ID-DE-LA-REVIEW
-
-### ========================================
-### HEALTH CHECK
-### ========================================
-
-### Health Check
-GET http://localhost:4000/health
-
-### ========================================
-### RUTAS
-### ========================================
-
-### Listar todas las rutas
-GET http://localhost:4000/api/routes
-
-### Ver una ruta específica
-GET http://localhost:4000/api/routes/heroes
-
-### ========================================
-### REVIEWS - VER
-### ========================================
-
-### Ver reviews de una ruta (debería estar vacío al inicio)
-GET http://localhost:4000/api/routes/{{routeId}}/reviews
-
-### ========================================
-### REVIEWS - CREAR
-### ========================================
-
-### Crear primera review (con comentario)
-POST http://localhost:4000/api/routes/{{routeId}}/reviews
+### Get token for your test user
+POST {{baseURL}}/auth/test-token
 Content-Type: application/json
 
 {
-  "userId": "{{userId1}}",
+  "email": "tu-email@ejemplo.com"
+}
+
+### ==============================================
+### REVIEWS - With Authentication
+### ==============================================
+
+### Create Review (Private - Requires Auth)
+POST {{baseURL}}/routes/ROUTE_ID_HERE/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
   "rating": 5,
-  "comment": "¡Ruta increíble! Muy recomendada para patinadores intermedios. Las vistas son espectaculares."
+  "comment": "Excelente ruta con autenticación real!"
 }
 
-### Crear segunda review (sin comentario)
-POST http://localhost:4000/api/routes/{{routeId}}/reviews
+### Get Reviews (Public)
+GET {{baseURL}}/routes/ROUTE_ID_HERE/reviews
+
+### ==============================================
+### FAVORITES - With Authentication
+### ==============================================
+
+### Add to Favorites (Private)
+POST {{baseURL}}/routes/ROUTE_ID_HERE/favorites
+Authorization: Bearer {{token}}
+
+### Get My Favorites (Private)
+GET {{baseURL}}/favorites
+Authorization: Bearer {{token}}
+
+### Check if Favorite (Private)
+GET {{baseURL}}/favorites/check/ROUTE_ID_HERE
+Authorization: Bearer {{token}}
+
+### Remove from Favorites (Private)
+DELETE {{baseURL}}/routes/ROUTE_ID_HERE/favorites
+Authorization: Bearer {{token}}
+
+### ==============================================
+### ROUTE CALLS - With Authentication
+### ==============================================
+
+### Create Route Call (Private)
+POST {{baseURL}}/route-calls
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "userId": "{{userId2}}",
-  "rating": 4
+  "routeId": "ROUTE_ID_HERE",
+  "description": "Convocatoria con autenticación real",
+  "dateRoute": "2026-03-01T10:00:00Z",
+  "pace": "CARACOL",
+  "meetingPoints": [
+    {
+      "type": "PRIMARY",
+      "name": "Puerta de Alcalá",
+      "location": "https://maps.app.goo.gl/3kjrtMz9BtQ39BJYA"
+    }
+  ]
 }
 
-### Intentar crear review duplicada (debería fallar)
-POST http://localhost:4000/api/routes/{{routeId}}/reviews
+### Get All Route Calls (Public)
+GET {{baseURL}}/route-calls
+
+### Update Route Call (Private - Only Organizer)
+PUT {{baseURL}}/route-calls/ROUTE_CALL_ID_HERE
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "userId": "{{userId1}}",
-  "rating": 3,
-  "comment": "Esto debería fallar porque ya tengo una review"
+  "description": "Descripción actualizada"
 }
 
-### Crear review con rating inválido (debería fallar)
-POST http://localhost:4000/api/routes/{{routeId}}/reviews
+### Cancel Route Call (Private - Organizer or Admin)
+PATCH {{baseURL}}/route-calls/ROUTE_CALL_ID_HERE/cancel
+Authorization: Bearer {{token}}
+
+### ==============================================
+### ATTENDANCES - With Authentication
+### ==============================================
+
+### Confirm Attendance (Private)
+POST {{baseURL}}/route-calls/ROUTE_CALL_ID_HERE/attendances
+Authorization: Bearer {{token}}
+
+### Get Attendances (Public)
+GET {{baseURL}}/route-calls/ROUTE_CALL_ID_HERE/attendances
+
+### Get My Attendances (Private)
+GET {{baseURL}}/attendances/my-attendances
+Authorization: Bearer {{token}}
+
+### Cancel Attendance (Private)
+DELETE {{baseURL}}/route-calls/ROUTE_CALL_ID_HERE/attendances
+Authorization: Bearer {{token}}
+
+### ==============================================
+### PHOTOS - With Authentication
+### ==============================================
+
+### Upload Photo to Route Gallery (Private)
+POST {{baseURL}}/photos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "userId": "temp-user-789",
-  "rating": 6,
-  "comment": "Rating inválido (máximo 5)"
+  "context": "ROUTE_GALLERY",
+  "routeId": "ROUTE_ID_HERE",
+  "imageUrl": "https://images.unsplash.com/photo-1449034446853-66c86144b0ad",
+  "caption": "Foto subida con autenticación real"
 }
 
-### ========================================
-### REVIEWS - EDITAR
-### ========================================
+### Get Public Gallery
+GET {{baseURL}}/photos
 
-### Editar una review (solo rating)
-PUT http://localhost:4000/api/reviews/{{reviewId}}
-Content-Type: application/json
+### Get My Photos (Private)
+GET {{baseURL}}/photos/my-photos
+Authorization: Bearer {{token}}
 
-{
-  "userId": "{{userId1}}",
-  "rating": 4
-}
+### Get Pending Photos (Admin Only)
+GET {{baseURL}}/photos/pending-review
+Authorization: Bearer {{token}}
 
-### Editar una review (rating y comentario)
-PUT http://localhost:4000/api/reviews/{{reviewId}}
-Content-Type: application/json
-
-{
-  "userId": "{{userId1}}",
-  "rating": 5,
-  "comment": "Actualizo mi review: después de ir varias veces, confirmo que es excelente!"
-}
-
-### Intentar editar review de otro usuario (debería fallar)
-PUT http://localhost:4000/api/reviews/{{reviewId}}
-Content-Type: application/json
-
-{
-  "userId": "{{userId2}}",
-  "rating": 1,
-  "comment": "No debería poder editar la review de otro usuario"
-}
-
-### ========================================
-### REVIEWS - ELIMINAR
-### ========================================
-
-### Eliminar una review (por el dueño)
-DELETE http://localhost:4000/api/reviews/{{reviewId}}
-Content-Type: application/json
-
-{
-  "userId": "{{userId1}}"
-}
-
-### Intentar eliminar review de otro usuario (debería fallar)
-DELETE http://localhost:4000/api/reviews/{{reviewId}}
-Content-Type: application/json
-
-{
-  "userId": "{{userId2}}"
-}
-
-### ==================== FAVORITES ====================
-
-### Get all favorites for user
-GET http://localhost:4000/api/favorites?userId=temp-user-id
-
-### Check if route is favorite
-GET http://localhost:4000/api/favorites/check/{{routeId}}?userId=temp-user-id
-
-### Add route to favorites
-POST http://localhost:4000/api/routes/{{routeId}}/favorites
-Content-Type: application/json
-
-{
-  "userId": "temp-user-id"
-}
-
-### Remove route from favorites
-DELETE http://localhost:4000/api/routes/{{routeId}}/favorites
-Content-Type: application/json
-
-{
-  "userId": "temp-user-id"
-}
+### Delete Photo (Private - Owner or Admin)
+DELETE {{baseURL}}/photos/PHOTO_ID_HERE
+Authorization: Bearer {{token}}
