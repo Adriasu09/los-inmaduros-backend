@@ -33,11 +33,20 @@ router.post("/test-token", async (req: Request, res: Response) => {
 
     const user = users.data[0];
 
-    // Create a session token for testing
-    // Note: In production, tokens should only come from the frontend
-    const token = await clerkClient.sessions.createSession({
+    // Create a session for the user
+    const session = await clerkClient.sessions.createSession({
       userId: user.id,
     });
+
+    // Get the JWT token from the session using your custom template
+    const tokenResponse = await clerkClient.sessions.getToken(
+      session.id,
+      "testing-template",
+    );
+
+    // Extract the JWT string from the response
+    const token =
+      typeof tokenResponse === "string" ? tokenResponse : tokenResponse.jwt;
 
     res.json({
       success: true,
@@ -45,8 +54,11 @@ router.post("/test-token", async (req: Request, res: Response) => {
       data: {
         userId: user.id,
         email: user.emailAddresses[0]?.emailAddress,
-        token: token.id,
+        sessionId: session.id,
+        token: token, // ← Solo el JWT string
         warning: "This endpoint should be removed in production",
+        instructions:
+          "Copy this token and use it in Postman: Authorization: Bearer <token>",
       },
     });
   } catch (error: any) {
@@ -54,6 +66,7 @@ router.post("/test-token", async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: error.message || "Failed to generate test token",
+      details: error.errors || [],
     });
   }
 });
