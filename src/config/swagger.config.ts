@@ -6,7 +6,10 @@ import { generateOpenAPIDocument } from "./openapi-registry";
  */
 import "../modules/reviews/reviews.routes";
 import "../modules/reviews/reviews.nested.routes";
-
+import "../modules/attendances/attendances.routes";
+import "../modules/attendances/attendances.nested.routes";
+import "../modules/auth/auth.validation";
+import "../modules/auth/auth.routes";
 /**
  * Export OpenAPI specification generated from Zod schemas
  */

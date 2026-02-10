@@ -1,13 +1,117 @@
 import { Router, Request, Response } from "express";
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { registry } from "../../config/openapi-registry";
 
 const router = Router();
 
 /**
- * @route   POST /api/auth/test-token
- * @desc    Get a test token for a user (DEVELOPMENT ONLY)
- * @access  Public (should be removed in production)
+ * Register OpenAPI paths
  */
+
+// POST /api/auth/test-token
+registry.registerPath({
+  method: "post",
+  path: "/api/auth/test-token",
+  tags: ["Auth"],
+  summary: "Generate test token (DEVELOPMENT ONLY)",
+  description:
+    "Generate a JWT token for a user registered in Clerk. This endpoint is for development and testing purposes only and should be removed in production.",
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: {
+            $ref: "#/components/schemas/TestTokenBody",
+          },
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Test token generated successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: true },
+              message: {
+                type: "string",
+                example: "Test token generated successfully",
+              },
+              data: {
+                $ref: "#/components/schemas/TestTokenResponse",
+              },
+            },
+          },
+        },
+      },
+    },
+    400: {
+      description: "Bad Request - Email is required",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              error: {
+                type: "string",
+                example: "Email is required",
+              },
+            },
+          },
+        },
+      },
+    },
+    404: {
+      description: "User not found in Clerk",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              error: {
+                type: "string",
+                example:
+                  "User not found. Create user in Clerk dashboard first.",
+              },
+            },
+          },
+        },
+      },
+    },
+    500: {
+      description: "Internal Server Error - Failed to generate token",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              error: {
+                type: "string",
+                example: "Failed to generate test token",
+              },
+              details: {
+                type: "array",
+                items: { type: "object" },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+});
+
+/**
+ * Express routes
+ */
+
+// POST /api/auth/test-token
 router.post("/test-token", async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -55,7 +159,7 @@ router.post("/test-token", async (req: Request, res: Response) => {
         userId: user.id,
         email: user.emailAddresses[0]?.emailAddress,
         sessionId: session.id,
-        token: token, // ← Solo el JWT string
+        token: token,
         warning: "This endpoint should be removed in production",
         instructions:
           "Copy this token and use it in Postman: Authorization: Bearer <token>",

@@ -27,26 +27,8 @@ export function generateOpenAPIDocument() {
       title: "Los Inmaduros Rollers Madrid API",
       version: "1.0.0",
       description:
-        "API Backend para la comunidad de patinadores Los Inmaduros Rollers Madrid. Gestiona rutas, convocatorias, asistencias, reseñas, favoritos y galerías de fotos.",
-      contact: {
-        name: "Los Inmaduros Rollers Madrid",
-        url: "https://github.com/tu-usuario/los-inmaduros-backend",
-      },
-      license: {
-        name: "MIT",
-        url: "https://opensource.org/licenses/MIT",
-      },
+        "API Backend for the Los Inmaduros Rollers Madrid skating community. Manage routes, events, attendance, reviews, favorites, and photo galleries.",
     },
-    servers: [
-      {
-        url: "http://localhost:4000",
-        description: "Development server",
-      },
-      {
-        url: "https://api.losinmaduros.com",
-        description: "Production server",
-      },
-    ],
     tags: [
       {
         name: "Health",
