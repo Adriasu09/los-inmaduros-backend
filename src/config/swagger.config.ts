@@ -12,6 +12,8 @@ import "../modules/auth/auth.validation";
 import "../modules/auth/auth.routes";
 import "../modules/config/config.validation";
 import "../modules/config/config.routes";
+import "../modules/favorites/favorites.routes";
+import "../modules/favorites/favorites.nested.routes";
 
 /**
  * Export OpenAPI specification generated from Zod schemas

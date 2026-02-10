@@ -122,6 +122,16 @@ export class FavoritesService {
    * Check if a route is in user's favorites
    */
   async checkIsFavorite(userId: string, routeId: string): Promise<boolean> {
+    // Verify route exists first
+    const route = await prisma.route.findUnique({
+      where: { id: routeId },
+    });
+
+    if (!route) {
+      throw new NotFoundError("Route not found");
+    }
+
+    // Check if it's in favorites
     const favorite = await prisma.favorite.findUnique({
       where: {
         routeId_userId: {
