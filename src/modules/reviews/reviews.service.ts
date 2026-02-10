@@ -11,6 +11,15 @@ export class ReviewsService {
    * Get all reviews for a route
    */
   async getRouteReviews(routeId: string) {
+    // Verify route exists
+    const route = await prisma.route.findUnique({
+      where: { id: routeId },
+    });
+
+    if (!route) {
+      throw new NotFoundError("Route not found");
+    }
+
     return await prisma.review.findMany({
       where: { routeId },
       include: {
@@ -19,6 +28,33 @@ export class ReviewsService {
             id: true,
             name: true,
             imageUrl: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  /**
+   * Get all reviews created by a user
+   */
+  async getMyReviews(userId: string) {
+    return await prisma.review.findMany({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            imageUrl: true,
+          },
+        },
+        route: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            image: true,
           },
         },
       },

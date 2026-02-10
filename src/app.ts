@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import { PORT, validateEnv } from "./config/env.config";
+import { swaggerSpec } from "./config/swagger.config";
 import { connectDatabase, prisma } from "./database/prisma.client";
 
 // Import routes
@@ -34,18 +36,35 @@ const app: Application = express();
 // CORS - Allow requests from frontend
 app.use(
   cors({
-    origin: "*", // You can change this to your frontend URL later
+    origin: "*", // Change this to your frontend URL in production
     credentials: true,
   }),
 );
 
-// Body parser - To read JSON in requests
+// Body parser - Parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ==================== SWAGGER DOCUMENTATION ====================
+// Swagger UI - Available at /api-docs
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "Los Inmaduros API Docs",
+  }),
+);
+
+// Swagger JSON spec - Available at /api-docs.json
+app.get("/api-docs.json", (req: Request, res: Response) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
+
 // ==================== ROUTES ====================
 
-// Health check (with DB verification)
+// Health check endpoint
 app.get("/health", async (req: Request, res: Response) => {
   try {
     // Verify database connection
@@ -77,7 +96,7 @@ app.use("/api/route-calls", routeCallsRouter);
 app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter);
 app.use("/api/attendances", attendancesRouter);
 app.use("/api/photos", photosRouter);
-app.use("/api/auth", authRouter); //TODO: (SOLO PARA DESARROLLO)
+app.use("/api/auth", authRouter); // TODO: Remove in production
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes
@@ -102,6 +121,8 @@ async function startServer() {
   ║   Environment: development             ║
   ║   Database: ✅ Connected               ║
   ║   Status: ✅ Running                   ║
+  ║                                        ║
+  ║   📖 API Docs: /api-docs               ║
   ╚════════════════════════════════════════╝
       `);
     });

@@ -34,6 +34,25 @@ export class ReviewsController {
   };
 
   /**
+   * GET /api/reviews/my-reviews
+   * Get all reviews created by the authenticated user
+   */
+  getMyReviews = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.auth!.userId;
+
+      const reviews = await this.reviewsService.getMyReviews(userId);
+
+      res.status(200).json({
+        success: true,
+        data: reviews,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * POST /api/routes/:routeId/reviews
    * Create a review
    */
