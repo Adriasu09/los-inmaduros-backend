@@ -6,6 +6,8 @@ export const PORT = getPort();
 export const DATABASE_URL = process.env.DATABASE_URL;
 export const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY;
 export const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
+export const SUPABASE_URL = process.env.SUPABASE_URL;
+export const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 function getPort(): number {
   const port = parseInt(process.env.PORT || "4000", 10);
@@ -20,6 +22,8 @@ export function validateEnv(): void {
     "DATABASE_URL",
     "CLERK_SECRET_KEY",
     "CLERK_PUBLISHABLE_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
   ];
 
   const missingVars = requiredEnvVars.filter(
@@ -34,3 +38,13 @@ export function validateEnv(): void {
 
   console.log("✅ Environment variables validated successfully");
 }
+
+// Export env object for easier imports
+export const env = {
+  PORT,
+  DATABASE_URL,
+  CLERK_SECRET_KEY,
+  CLERK_PUBLISHABLE_KEY,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+};

@@ -4,13 +4,31 @@ import {
   ForbiddenError,
   BadRequestError,
 } from "../../shared/errors/custom-errors";
-import { UploadPhotoInput, UpdateCoverPhotoInput } from "./photos.validation";
+import { StorageService } from "../../shared/services/storage.service";
 
 export class PhotosService {
+  private storageService: StorageService;
+
+  constructor() {
+    this.storageService = new StorageService();
+  }
+
   /**
    * Upload a photo with context-based permissions
    */
-  async uploadPhoto(userId: string, data: UploadPhotoInput) {
+  async uploadPhoto(
+    userId: string,
+    file: Express.Multer.File,
+    data: {
+      context: string;
+      routeId?: string;
+      routeCallId?: string;
+      caption?: string;
+    },
+  ) {
+    // Validate file
+    this.storageService.validateImageFile(file);
+
     // Validate based on context
     if (data.context === "ROUTE_GALLERY") {
       // Verify route exists
@@ -66,16 +84,20 @@ export class PhotosService {
       }
     }
 
-    // Create photo
+    // Upload file to Supabase Storage
+    const folder = this.storageService.getFolderByContext(data.context);
+    const imageUrl = await this.storageService.uploadFile(file, folder);
+
+    // Create photo record in database
     const photo = await prisma.photo.create({
       data: {
-        context: data.context,
+        context: data.context as any,
         routeId: data.routeId || null,
         routeCallId: data.routeCallId || null,
         userId,
-        imageUrl: data.imageUrl,
+        imageUrl,
         caption: data.caption || null,
-        status: "ACTIVE", // Post-moderation: publish immediately
+        status: "ACTIVE",
       },
       include: {
         user: {
@@ -101,8 +123,6 @@ export class PhotosService {
       },
     });
 
-    // TODO: Send notification to admins for review
-
     return photo;
   }
 
@@ -112,8 +132,11 @@ export class PhotosService {
   async updateCoverPhoto(
     userId: string,
     routeCallId: string,
-    data: UpdateCoverPhotoInput,
+    file: Express.Multer.File,
   ) {
+    // Validate file
+    this.storageService.validateImageFile(file);
+
     // Verify route call exists and user is organizer
     const routeCall = await prisma.routeCall.findUnique({
       where: { id: routeCallId },
@@ -128,6 +151,10 @@ export class PhotosService {
       throw new ForbiddenError("Only the organizer can update the cover photo");
     }
 
+    // Upload new file to Supabase Storage
+    const folder = this.storageService.getFolderByContext("ROUTE_CALL_COVER");
+    const imageUrl = await this.storageService.uploadFile(file, folder);
+
     // Check if there's already a cover photo
     const existingCover = await prisma.photo.findFirst({
       where: {
@@ -137,11 +164,14 @@ export class PhotosService {
     });
 
     if (existingCover) {
+      // Delete old file from storage
+      await this.storageService.deleteFile(existingCover.imageUrl);
+
       // Update existing cover
       const updated = await prisma.photo.update({
         where: { id: existingCover.id },
         data: {
-          imageUrl: data.imageUrl,
+          imageUrl,
         },
         include: {
           user: {
@@ -162,7 +192,7 @@ export class PhotosService {
           context: "ROUTE_CALL_COVER",
           routeCallId,
           userId,
-          imageUrl: data.imageUrl,
+          imageUrl,
           status: "ACTIVE",
         },
         include: {
@@ -472,7 +502,7 @@ export class PhotosService {
   async deletePhoto(userId: string, userRole: string, photoId: string) {
     const photo = await prisma.photo.findUnique({
       where: { id: photoId },
-      select: { id: true, userId: true, status: true },
+      select: { id: true, userId: true, status: true, imageUrl: true },
     });
 
     if (!photo) {
@@ -484,7 +514,10 @@ export class PhotosService {
       throw new ForbiddenError("You can only delete your own photos");
     }
 
-    // Soft delete
+    // Delete file from Supabase Storage
+    await this.storageService.deleteFile(photo.imageUrl);
+
+    // Soft delete in database
     await prisma.photo.update({
       where: { id: photoId },
       data: {

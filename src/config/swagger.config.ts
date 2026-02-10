@@ -14,6 +14,7 @@ import "../modules/config/config.validation";
 import "../modules/config/config.routes";
 import "../modules/favorites/favorites.routes";
 import "../modules/favorites/favorites.nested.routes";
+import "../modules/photos/photos.routes";
 import "../modules/route-calls/route-calls.routes";
 import "../modules/routes/routes.routes";
 

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { PhotosService } from "./photos.service";
-import { UploadPhotoInput, UpdateCoverPhotoInput } from "./photos.validation";
+import { BadRequestError } from "../../shared/errors/custom-errors";
 
 export class PhotosController {
   private photosService: PhotosService;
@@ -15,11 +15,19 @@ export class PhotosController {
    */
   uploadPhoto = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const validatedData = req.body as UploadPhotoInput;
+      // Check if file was uploaded
+      if (!req.file) {
+        throw new BadRequestError("No file uploaded");
+      }
 
       const userId = req.auth!.userId;
+      const validatedData = req.body;
 
-      const photo = await this.photosService.uploadPhoto(userId, validatedData);
+      const photo = await this.photosService.uploadPhoto(
+        userId,
+        req.file,
+        validatedData,
+      );
 
       res.status(201).json({
         success: true,
@@ -41,15 +49,18 @@ export class PhotosController {
     next: NextFunction,
   ) => {
     try {
-      const routeCallId = req.params.id as string;
-      const validatedData = req.body as UpdateCoverPhotoInput;
+      // Check if file was uploaded
+      if (!req.file) {
+        throw new BadRequestError("No file uploaded");
+      }
 
+      const routeCallId = req.params.id as string;
       const userId = req.auth!.userId;
 
       const photo = await this.photosService.updateCoverPhoto(
         userId,
         routeCallId,
-        validatedData,
+        req.file,
       );
 
       res.status(200).json({
@@ -207,9 +218,7 @@ export class PhotosController {
   approvePhoto = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const photoId = req.params.id as string;
-
-      // TODO: Get adminId from authentication token (Clerk)
-      const adminId = (req.body as any).userId || "temp-admin-id";
+      const adminId = req.auth!.userId;
 
       const photo = await this.photosService.approvePhoto(adminId, photoId);
 
