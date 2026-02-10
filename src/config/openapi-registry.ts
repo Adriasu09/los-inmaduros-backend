@@ -31,10 +31,6 @@ export function generateOpenAPIDocument() {
     },
     tags: [
       {
-        name: "Health",
-        description: "Health check endpoints",
-      },
-      {
         name: "Auth",
         description: "Authentication endpoints (DEVELOPMENT ONLY)",
       },
