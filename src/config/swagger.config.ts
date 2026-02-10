@@ -10,6 +10,9 @@ import "../modules/attendances/attendances.routes";
 import "../modules/attendances/attendances.nested.routes";
 import "../modules/auth/auth.validation";
 import "../modules/auth/auth.routes";
+import "../modules/config/config.validation";
+import "../modules/config/config.routes";
+
 /**
  * Export OpenAPI specification generated from Zod schemas
  */
