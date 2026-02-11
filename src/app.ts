@@ -1,7 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-import { PORT, validateEnv } from "./config/env.config";
+import { PORT, NODE_ENV, FRONTEND_URL, validateEnv } from "./config/env.config";
 import { swaggerSpec } from "./config/swagger.config";
 import { connectDatabase, prisma } from "./database/prisma.client";
 
@@ -36,8 +36,10 @@ const app: Application = express();
 // CORS - Allow requests from frontend
 app.use(
   cors({
-    origin: "*", // Change this to your frontend URL in production
+    origin: FRONTEND_URL || "http://localhost:3000",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
@@ -117,7 +119,7 @@ async function startServer() {
   ║   🛼 Los Inmaduros Backend Server   ║
   ╠════════════════════════════════════════╣
   ║   Port: ${PORT}                        ║
-  ║   Environment: development             ║
+  ║   Environment: ${NODE_ENV}             ║
   ║   Database: ✅ Connected               ║
   ║   Status: ✅ Running                   ║
   ║                                        ║

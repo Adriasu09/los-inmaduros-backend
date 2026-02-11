@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
 import { AppError } from "../errors/custom-errors";
+import { NODE_ENV } from "../../config/env.config";
 
 /**
  * Global error handling middleware
@@ -77,7 +78,7 @@ export function errorHandler(
   return res.status(500).json({
     success: false,
     error: "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && {
+    ...(NODE_ENV === "development" && {
       details: error.message,
       stack: error.stack,
     }),

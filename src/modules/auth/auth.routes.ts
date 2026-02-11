@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { registry } from "../../config/openapi-registry";
+import { NODE_ENV } from "../../config/env.config";
 
 const router = Router();
 
@@ -111,68 +112,80 @@ registry.registerPath({
  * Express routes
  */
 
-// POST /api/auth/test-token
-router.post("/test-token", async (req: Request, res: Response) => {
-  try {
-    const { email } = req.body;
+// POST /api/auth/test-token (ONLY DEVELOPMENT)
+if (process.env.NODE_ENV !== "production") {
+  router.post("/test-token", async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        error: "Email is required",
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          error: "Email is required",
+        });
+      }
+
+      // Find user by email
+      const users = await clerkClient.users.getUserList({
+        emailAddress: [email],
       });
-    }
 
-    // Find user by email
-    const users = await clerkClient.users.getUserList({
-      emailAddress: [email],
-    });
+      if (!users || users.data.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: "User not found. Create user in Clerk dashboard first.",
+        });
+      }
 
-    if (!users || users.data.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found. Create user in Clerk dashboard first.",
-      });
-    }
+      const user = users.data[0];
 
-    const user = users.data[0];
-
-    // Create a session for the user
-    const session = await clerkClient.sessions.createSession({
-      userId: user.id,
-    });
-
-    // Get the JWT token from the session using your custom template
-    const tokenResponse = await clerkClient.sessions.getToken(
-      session.id,
-      "testing-template",
-    );
-
-    // Extract the JWT string from the response
-    const token =
-      typeof tokenResponse === "string" ? tokenResponse : tokenResponse.jwt;
-
-    res.json({
-      success: true,
-      message: "Test token generated successfully",
-      data: {
+      // Create a session for the user
+      const session = await clerkClient.sessions.createSession({
         userId: user.id,
-        email: user.emailAddresses[0]?.emailAddress,
-        sessionId: session.id,
-        token: token,
-        warning: "This endpoint should be removed in production",
-        instructions:
-          "Copy this token and use it in Postman: Authorization: Bearer <token>",
-      },
-    });
-  } catch (error: any) {
-    console.error("Error generating test token:", error);
-    res.status(500).json({
+      });
+
+      // Get the JWT token from the session using your custom template
+      const tokenResponse = await clerkClient.sessions.getToken(
+        session.id,
+        "testing-template",
+      );
+
+      // Extract the JWT string from the response
+      const token =
+        typeof tokenResponse === "string" ? tokenResponse : tokenResponse.jwt;
+
+      res.json({
+        success: true,
+        message: "Test token generated successfully",
+        data: {
+          userId: user.id,
+          email: user.emailAddresses[0]?.emailAddress,
+          sessionId: session.id,
+          token: token,
+          warning: "This endpoint should be removed in production",
+          instructions:
+            "Copy this token and use it in Postman: Authorization: Bearer <token>",
+        },
+      });
+    } catch (error: any) {
+      console.error("Error generating test token:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message || "Failed to generate test token",
+        ...(NODE_ENV === "development" && {
+          details: error.errors || [],
+        }),
+      });
+    }
+  });
+} else {
+  // In production, return 404 for this endpoint
+  router.post("/test-token", async (req: Request, res: Response) => {
+    res.status(404).json({
       success: false,
-      error: error.message || "Failed to generate test token",
-      details: error.errors || [],
+      error: "Endpoint not available in production",
     });
-  }
-});
+  });
+}
 
 export default router;
