@@ -49,10 +49,19 @@ export class RoutesController {
     next: NextFunction,
   ) => {
     try {
-      // No need to validate - middleware already did it
       const { slug } = req.params;
+      const { reviewsPage, reviewsLimit, photosLimit } = req.query as {
+        reviewsPage?: number;
+        reviewsLimit?: number;
+        photosLimit?: number;
+      };
 
-      const route = await this.routesService.getRouteBySlug(slug);
+      const route = await this.routesService.getRouteBySlug(slug, {
+        reviewsPage,
+        reviewsLimit,
+        photosLimit,
+      });
+
       const averageRating = await this.routesService.getRouteAverageRating(
         route.id,
       );

@@ -22,12 +22,23 @@ registry.registerPath({
   path: "/api/routes/{routeId}/reviews",
   tags: ["Reviews"],
   summary: "Get route reviews",
-  description: "Get all reviews for a specific route",
+  description:
+    "Get all reviews for a specific route with pagination. Default: 20 items per page, max 100.",
   request: {
     params: z.object({
       routeId: z.string().uuid().openapi({
         description: "ID of the route",
         example: "123e4567-e89b-12d3-a456-426614174000",
+      }),
+    }),
+    query: z.object({
+      page: z.string().optional().openapi({
+        description: "Page number (default: 1)",
+        example: "1",
+      }),
+      limit: z.string().optional().openapi({
+        description: "Items per page (default: 20, max: 100)",
+        example: "20",
       }),
     }),
   },
@@ -46,10 +57,40 @@ registry.registerPath({
                   $ref: "#/components/schemas/ReviewResponse",
                 },
               },
-              count: {
-                type: "integer",
-                example: 5,
-                description: "Total number of reviews",
+              pagination: {
+                type: "object",
+                properties: {
+                  page: {
+                    type: "integer",
+                    example: 1,
+                    description: "Current page number",
+                  },
+                  limit: {
+                    type: "integer",
+                    example: 20,
+                    description: "Items per page",
+                  },
+                  totalCount: {
+                    type: "integer",
+                    example: 45,
+                    description: "Total number of reviews for this route",
+                  },
+                  totalPages: {
+                    type: "integer",
+                    example: 3,
+                    description: "Total number of pages",
+                  },
+                  hasNextPage: {
+                    type: "boolean",
+                    example: true,
+                    description: "Whether there is a next page",
+                  },
+                  hasPreviousPage: {
+                    type: "boolean",
+                    example: false,
+                    description: "Whether there is a previous page",
+                  },
+                },
               },
             },
           },

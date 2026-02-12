@@ -61,12 +61,26 @@ registry.registerPath({
   tags: ["Routes"],
   summary: "Get route by slug",
   description:
-    "Get detailed information about a specific route including reviews, photos, and average rating. Public endpoint.",
+    "Get detailed information about a specific route including reviews (paginated), photos (limited), and average rating. Public endpoint.",
   request: {
     params: z.object({
       slug: z.string().openapi({
         description: "Route slug (e.g., 'casa-de-campo')",
         example: "casa-de-campo",
+      }),
+    }),
+    query: z.object({
+      reviewsPage: z.string().optional().openapi({
+        description: "Reviews page number (default: 1)",
+        example: "1",
+      }),
+      reviewsLimit: z.string().optional().openapi({
+        description: "Reviews per page (default: 20, max: 100)",
+        example: "20",
+      }),
+      photosLimit: z.string().optional().openapi({
+        description: "Number of photos to return (default: 20, max: 100)",
+        example: "20",
       }),
     }),
   },
@@ -80,7 +94,52 @@ registry.registerPath({
             properties: {
               success: { type: "boolean", example: true },
               data: {
-                $ref: "#/components/schemas/RouteDetailedResponse",
+                allOf: [
+                  {
+                    $ref: "#/components/schemas/RouteDetailedResponse",
+                  },
+                  {
+                    type: "object",
+                    properties: {
+                      reviewsPagination: {
+                        type: "object",
+                        properties: {
+                          page: {
+                            type: "integer",
+                            example: 1,
+                            description: "Current page number for reviews",
+                          },
+                          limit: {
+                            type: "integer",
+                            example: 20,
+                            description: "Reviews per page",
+                          },
+                          totalCount: {
+                            type: "integer",
+                            example: 45,
+                            description:
+                              "Total number of reviews for this route",
+                          },
+                          totalPages: {
+                            type: "integer",
+                            example: 3,
+                            description: "Total number of pages",
+                          },
+                          hasNextPage: {
+                            type: "boolean",
+                            example: true,
+                            description: "Whether there is a next page",
+                          },
+                          hasPreviousPage: {
+                            type: "boolean",
+                            example: false,
+                            description: "Whether there is a previous page",
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
               },
             },
           },

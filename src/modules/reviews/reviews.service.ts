@@ -8,9 +8,14 @@ import { CreateReviewInput, UpdateReviewInput } from "./reviews.validation";
 
 export class ReviewsService {
   /**
-   * Get all reviews for a route
+   * Get all reviews for a route with pagination
    */
-  async getRouteReviews(routeId: string) {
+  async getRouteReviews(routeId: string, page?: number, limit?: number) {
+    // Pagination configuration
+    const currentPage = page || 1;
+    const currentLimit = Math.min(limit || 20, 100);
+    const skip = (currentPage - 1) * currentLimit;
+
     // Verify route exists
     const route = await prisma.route.findUnique({
       where: { id: routeId },
@@ -20,8 +25,16 @@ export class ReviewsService {
       throw new NotFoundError("Route not found");
     }
 
-    return await prisma.review.findMany({
+    // Get total count
+    const totalCount = await prisma.review.count({
       where: { routeId },
+    });
+
+    // Get paginated reviews
+    const reviews = await prisma.review.findMany({
+      where: { routeId },
+      skip,
+      take: currentLimit,
       include: {
         user: {
           select: {
@@ -33,6 +46,18 @@ export class ReviewsService {
       },
       orderBy: { createdAt: "desc" },
     });
+
+    return {
+      data: reviews,
+      pagination: {
+        page: currentPage,
+        limit: currentLimit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / currentLimit),
+        hasNextPage: currentPage < Math.ceil(totalCount / currentLimit),
+        hasPreviousPage: currentPage > 1,
+      },
+    };
   }
 
   /**

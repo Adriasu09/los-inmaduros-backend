@@ -130,6 +130,32 @@ export const getRouteBySlugSchema = z.object({
   params: z.object({
     slug: z.string().min(1, "Slug is required"),
   }),
+  query: z.object({
+    reviewsPage: z
+      .string()
+      .regex(/^\d+$/, "Reviews page must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1, "Reviews page must be at least 1")
+      .optional(),
+    reviewsLimit: z
+      .string()
+      .regex(/^\d+$/, "Reviews limit must be a positive number")
+      .transform(Number)
+      .refine(
+        (n) => n >= 1 && n <= 100,
+        "Reviews limit must be between 1 and 100",
+      )
+      .optional(),
+    photosLimit: z
+      .string()
+      .regex(/^\d+$/, "Photos limit must be a positive number")
+      .transform(Number)
+      .refine(
+        (n) => n >= 1 && n <= 100,
+        "Photos limit must be between 1 and 100",
+      )
+      .optional(),
+  }),
 });
 
 export type GetRouteBySlugInput = z.infer<typeof getRouteBySlugSchema>;

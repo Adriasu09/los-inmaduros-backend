@@ -20,13 +20,18 @@ export class ReviewsController {
   ) => {
     try {
       const { routeId } = req.params;
+      const { page, limit } = req.query as { page?: number; limit?: number };
 
-      const reviews = await this.reviewsService.getRouteReviews(routeId);
+      const result = await this.reviewsService.getRouteReviews(
+        routeId,
+        page,
+        limit,
+      );
 
       res.status(200).json({
         success: true,
-        data: reviews,
-        count: reviews.length,
+        data: result.data,
+        pagination: result.pagination,
       });
     } catch (error) {
       next(error);

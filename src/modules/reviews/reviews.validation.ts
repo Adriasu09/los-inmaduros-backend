@@ -110,6 +110,20 @@ export const getRouteReviewsSchema = z.object({
   params: z.object({
     routeId: z.string().uuid("Must be a valid UUID"),
   }),
+  query: z.object({
+    page: z
+      .string()
+      .regex(/^\d+$/, "Page must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1, "Page must be at least 1")
+      .optional(),
+    limit: z
+      .string()
+      .regex(/^\d+$/, "Limit must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1 && n <= 100, "Limit must be between 1 and 100")
+      .optional(),
+  }),
 });
 
 export const createReviewSchema = z.object({
