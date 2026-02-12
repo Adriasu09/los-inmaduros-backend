@@ -34,7 +34,22 @@ const meetingPointSchema = z.object({
   type: MeetingPointTypeEnum,
   name: z.string().min(1, "Name is required"),
   customName: z.string().optional(),
-  location: z.string().url("Must be a valid URL").optional(),
+  location: z
+    .string()
+    .url("Must be a valid URL")
+    .refine((url) => {
+      try {
+        const parsed = new URL(url);
+        return (
+          parsed.hostname.includes("google") ||
+          parsed.hostname.includes("maps") ||
+          parsed.hostname.includes("goo.gl")
+        );
+      } catch {
+        return false;
+      }
+    }, "Only Google Maps URLs are allowed (e.g., maps.google.com, goo.gl)")
+    .optional(),
   time: z.string().datetime("Must be a valid ISO datetime").optional(),
 });
 
@@ -176,10 +191,18 @@ const createRouteCallBodySchema = registry.register(
         description: "Optional custom image URL",
         example: "https://example.com/my-route-call.jpg",
       }),
-      dateRoute: z.string().datetime("Must be a valid ISO datetime").openapi({
-        description: "Date and time of the route call",
-        example: "2026-02-15T10:00:00Z",
-      }),
+      dateRoute: z
+        .string()
+        .datetime("Must be a valid ISO datetime")
+        .refine(
+          (date) => new Date(date) > new Date(),
+          "Route call date must be in the future",
+        )
+        .openapi({
+          description:
+            "Date and time of the route call (must be in the future)",
+          example: "2026-02-15T10:00:00Z",
+        }),
       pace: RoutePaceEnum.openapi({ example: "MARIPOSA" }),
       meetingPoints: z
         .array(meetingPointSchema)
@@ -278,6 +301,18 @@ export const getRouteCallsSchema = z.object({
     organizerId: z.string().uuid("Must be a valid UUID").optional(),
     upcoming: z.enum(["true", "false"]).optional(),
     routeId: z.string().uuid("Must be a valid UUID").optional(),
+    page: z
+      .string()
+      .regex(/^\d+$/, "Page must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1, "Page must be at least 1")
+      .optional(),
+    limit: z
+      .string()
+      .regex(/^\d+$/, "Limit must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1 && n <= 100, "Limit must be between 1 and 100")
+      .optional(),
   }),
 });
 

@@ -109,7 +109,14 @@ export class RouteCallsService {
     organizerId?: string;
     upcoming?: string;
     routeId?: string;
+    page?: number;
+    limit?: number;
   }) {
+    // Pagination configuration
+    const page = filters?.page || 1;
+    const limit = Math.min(filters?.limit || 20, 100); // Default 20, max 100
+    const skip = (page - 1) * limit;
+
     const where: any = {};
 
     // Filter by status
@@ -150,8 +157,14 @@ export class RouteCallsService {
       ];
     }
 
+    // Get total count for pagination metadata
+    const totalCount = await prisma.routeCall.count({ where });
+
+    // Get paginated results
     const routeCalls = await prisma.routeCall.findMany({
       where,
+      skip,
+      take: limit,
       include: {
         route: {
           select: {
@@ -186,7 +199,17 @@ export class RouteCallsService {
       },
     });
 
-    return routeCalls;
+    return {
+      data: routeCalls,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        hasNextPage: page < Math.ceil(totalCount / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   /**

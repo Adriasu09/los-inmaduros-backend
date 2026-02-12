@@ -26,6 +26,12 @@ import {
   notFoundHandler,
 } from "./shared/middlewares/error.middleware";
 
+// Import rate limiters
+import {
+  generalLimiter,
+  authLimiter,
+} from "./shared/middlewares/rate-limit.middleware";
+
 // Validate environment variables
 validateEnv();
 
@@ -42,6 +48,9 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+// Rate limiting - Apply to all requests
+app.use("/api/", generalLimiter);
 
 // Body parser - Parse JSON and URL-encoded data
 app.use(express.json());
@@ -97,7 +106,7 @@ app.use("/api/route-calls", routeCallsRouter);
 app.use("/api/route-calls/:routeCallId/attendances", attendancesNestedRouter);
 app.use("/api/attendances", attendancesRouter);
 app.use("/api/photos", photosRouter);
-app.use("/api/auth", authRouter); // TODO: Remove in production
+app.use("/api/auth", authLimiter, authRouter); // TODO: Remove in production
 
 // ==================== ERROR HANDLING ====================
 // 404 handler - Must be after all routes

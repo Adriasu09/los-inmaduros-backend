@@ -41,25 +41,23 @@ export class RouteCallsController {
    * GET /api/route-calls
    * Get all route calls with optional filters
    */
-  getRouteCalls = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const filters = req.query as {
-        status?: string;
-        organizerId?: string;
-        upcoming?: string;
-        routeId?: string;
-      };
+  getRouteCalls = async (req: Request, res: Response) => {
+    const filters = req.query as {
+      status?: string;
+      organizerId?: string;
+      upcoming?: string;
+      routeId?: string;
+      page?: number;
+      limit?: number;
+    };
 
-      const routeCalls = await this.routeCallsService.getRouteCalls(filters);
+    const result = await this.routeCallsService.getRouteCalls(filters);
 
-      res.status(200).json({
-        success: true,
-        data: routeCalls,
-        count: routeCalls.length,
-      });
-    } catch (error) {
-      next(error);
-    }
+    res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    });
   };
 
   /**

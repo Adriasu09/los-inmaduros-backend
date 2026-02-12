@@ -20,10 +20,7 @@ import { registry } from "../../config/openapi-registry";
 import { z } from "zod";
 
 // Import schemas to register them in OpenAPI registry
-import {
-  PhotoContextEnum,
-  PhotoStatusEnum,
-} from "./photos.validation";
+import { PhotoContextEnum, PhotoStatusEnum } from "./photos.validation";
 
 const router = Router();
 const photosController = new PhotosController();
@@ -182,7 +179,7 @@ registry.registerPath({
   tags: ["Photos"],
   summary: "Get photos",
   description:
-    "Get public gallery photos with optional filters. Only ACTIVE photos by default. Public endpoint.",
+    "Get public gallery photos with optional filters and pagination. Only ACTIVE photos by default. Default: 20 items per page, max 100. Public endpoint.",
   request: {
     query: z.object({
       context: PhotoContextEnum.optional().openapi({
@@ -201,6 +198,14 @@ registry.registerPath({
         description: "Filter by status (default: ACTIVE)",
         example: "ACTIVE",
       }),
+      page: z.string().optional().openapi({
+        description: "Page number (default: 1)",
+        example: "1",
+      }),
+      limit: z.string().optional().openapi({
+        description: "Items per page (default: 20, max: 100)",
+        example: "20",
+      }),
     }),
   },
   responses: {
@@ -218,10 +223,40 @@ registry.registerPath({
                   $ref: "#/components/schemas/PhotoResponse",
                 },
               },
-              count: {
-                type: "integer",
-                example: 25,
-                description: "Total number of photos",
+              pagination: {
+                type: "object",
+                properties: {
+                  page: {
+                    type: "integer",
+                    example: 1,
+                    description: "Current page number",
+                  },
+                  limit: {
+                    type: "integer",
+                    example: 20,
+                    description: "Items per page",
+                  },
+                  totalCount: {
+                    type: "integer",
+                    example: 125,
+                    description: "Total number of photos matching filters",
+                  },
+                  totalPages: {
+                    type: "integer",
+                    example: 7,
+                    description: "Total number of pages",
+                  },
+                  hasNextPage: {
+                    type: "boolean",
+                    example: true,
+                    description: "Whether there is a next page",
+                  },
+                  hasPreviousPage: {
+                    type: "boolean",
+                    example: false,
+                    description: "Whether there is a previous page",
+                  },
+                },
               },
             },
           },

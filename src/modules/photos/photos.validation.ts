@@ -38,29 +38,15 @@ const photoResponseSchema = registry.register(
         .uuid()
         .nullable()
         .openapi({ example: "987e6543-e21b-12d3-a456-426614174000" }),
-      routeCallId: z
-        .string()
-        .uuid()
-        .nullable()
-        .openapi({ example: null }),
+      routeCallId: z.string().uuid().nullable().openapi({ example: null }),
       userId: z.string().openapi({ example: "user_2abc123def456" }),
-      imageUrl: z
-        .string()
-        .url()
-        .openapi({
-          example:
-            "https://your-project.supabase.co/storage/v1/object/public/photos/routes/image.jpg",
-        }),
-      caption: z
-        .string()
-        .nullable()
-        .openapi({ example: "Beautiful route!" }),
+      imageUrl: z.string().url().openapi({
+        example:
+          "https://your-project.supabase.co/storage/v1/object/public/photos/routes/image.jpg",
+      }),
+      caption: z.string().nullable().openapi({ example: "Beautiful route!" }),
       status: PhotoStatusEnum.openapi({ example: "ACTIVE" }),
-      moderatedAt: z
-        .string()
-        .datetime()
-        .nullable()
-        .openapi({ example: null }),
+      moderatedAt: z.string().datetime().nullable().openapi({ example: null }),
       moderatedBy: z.string().nullable().openapi({ example: null }),
       moderationNotes: z.string().nullable().openapi({ example: null }),
       createdAt: z
@@ -93,7 +79,9 @@ const photoResponseSchema = registry.register(
       routeCall: z
         .object({
           id: z.string().uuid(),
-          title: z.string().openapi({ example: "Ruta Casa de Campo - Domingo" }),
+          title: z
+            .string()
+            .openapi({ example: "Ruta Casa de Campo - Domingo" }),
         })
         .nullable()
         .optional(),
@@ -151,31 +139,19 @@ const uploadPhotoBodySchema = z
       description: "Photo context (where it will be displayed)",
       example: "ROUTE_GALLERY",
     }),
-    routeId: z
-      .string()
-      .uuid("Must be a valid UUID")
-      .optional()
-      .openapi({
-        description: "Route ID (required for ROUTE_GALLERY)",
-        example: "987e6543-e21b-12d3-a456-426614174000",
-      }),
-    routeCallId: z
-      .string()
-      .uuid("Must be a valid UUID")
-      .optional()
-      .openapi({
-        description:
-          "Route Call ID (required for ROUTE_CALL_COVER and ROUTE_CALL_GALLERY)",
-        example: "123e4567-e89b-12d3-a456-426614174000",
-      }),
-    caption: z
-      .string()
-      .max(500, "Caption too long")
-      .optional()
-      .openapi({
-        description: "Optional caption for the photo",
-        example: "Beautiful route through the park!",
-      }),
+    routeId: z.string().uuid("Must be a valid UUID").optional().openapi({
+      description: "Route ID (required for ROUTE_GALLERY)",
+      example: "987e6543-e21b-12d3-a456-426614174000",
+    }),
+    routeCallId: z.string().uuid("Must be a valid UUID").optional().openapi({
+      description:
+        "Route Call ID (required for ROUTE_CALL_COVER and ROUTE_CALL_GALLERY)",
+      example: "123e4567-e89b-12d3-a456-426614174000",
+    }),
+    caption: z.string().max(500, "Caption too long").optional().openapi({
+      description: "Optional caption for the photo",
+      example: "Beautiful route through the park!",
+    }),
   })
   .refine((data) => {
     if (data.context === "ROUTE_GALLERY" && !data.routeId) {
@@ -234,6 +210,18 @@ export const getPhotosSchema = z.object({
     routeId: z.string().uuid("Must be a valid UUID").optional(),
     routeCallId: z.string().uuid("Must be a valid UUID").optional(),
     status: PhotoStatusEnum.optional(),
+    page: z
+      .string()
+      .regex(/^\d+$/, "Page must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1, "Page must be at least 1")
+      .optional(),
+    limit: z
+      .string()
+      .regex(/^\d+$/, "Limit must be a positive number")
+      .transform(Number)
+      .refine((n) => n >= 1 && n <= 100, "Limit must be between 1 and 100")
+      .optional(),
   }),
 });
 

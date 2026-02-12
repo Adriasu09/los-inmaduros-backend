@@ -77,25 +77,23 @@ export class PhotosController {
    * GET /api/photos
    * Get public gallery (only ACTIVE photos by default)
    */
-  getPhotos = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const filters = req.query as {
-        context?: string;
-        routeId?: string;
-        routeCallId?: string;
-        status?: string;
-      };
+  getPhotos = async (req: Request, res: Response) => {
+    const filters = req.query as {
+      context?: string;
+      routeId?: string;
+      routeCallId?: string;
+      status?: string;
+      page?: number;
+      limit?: number;
+    };
 
-      const photos = await this.photosService.getPhotos(filters);
+    const result = await this.photosService.getPhotos(filters);
 
-      res.status(200).json({
-        success: true,
-        data: photos,
-        count: photos.length,
-      });
-    } catch (error) {
-      next(error);
-    }
+    res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    });
   };
 
   /**

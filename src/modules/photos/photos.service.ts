@@ -218,7 +218,14 @@ export class PhotosService {
     routeId?: string;
     routeCallId?: string;
     status?: string;
+    page?: number;
+    limit?: number;
   }) {
+    // Pagination configuration
+    const page = filters?.page || 1;
+    const limit = Math.min(filters?.limit || 20, 100);
+    const skip = (page - 1) * limit;
+
     const where: any = {};
 
     // By default, only show ACTIVE photos (public gallery)
@@ -236,8 +243,14 @@ export class PhotosService {
       where.routeCallId = filters.routeCallId;
     }
 
+    // Get total count for pagination
+    const totalCount = await prisma.photo.count({ where });
+
+    // Get paginated photos
     const photos = await prisma.photo.findMany({
       where,
+      skip,
+      take: limit,
       include: {
         user: {
           select: {
@@ -265,7 +278,17 @@ export class PhotosService {
       },
     });
 
-    return photos;
+    return {
+      data: photos,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        hasNextPage: page < Math.ceil(totalCount / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   /**

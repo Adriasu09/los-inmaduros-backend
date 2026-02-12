@@ -127,7 +127,7 @@ registry.registerPath({
   tags: ["Route Calls"],
   summary: "Get all route calls",
   description:
-    "Get all route calls with optional filters (status, organizer, upcoming, route). Public endpoint.",
+    "Get all route calls with optional filters and pagination. Default: 20 items per page, max 100. Public endpoint.",
   request: {
     query: z.object({
       status: RouteCallStatusEnum.optional().openapi({
@@ -146,6 +146,14 @@ registry.registerPath({
         description: "Filter by route ID",
         example: "987e6543-e21b-12d3-a456-426614174000",
       }),
+      page: z.string().optional().openapi({
+        description: "Page number (default: 1)",
+        example: "1",
+      }),
+      limit: z.string().optional().openapi({
+        description: "Items per page (default: 20, max: 100)",
+        example: "20",
+      }),
     }),
   },
   responses: {
@@ -163,10 +171,40 @@ registry.registerPath({
                   $ref: "#/components/schemas/RouteCallResponse",
                 },
               },
-              count: {
-                type: "integer",
-                example: 15,
-                description: "Total number of route calls",
+              pagination: {
+                type: "object",
+                properties: {
+                  page: {
+                    type: "integer",
+                    example: 1,
+                    description: "Current page number",
+                  },
+                  limit: {
+                    type: "integer",
+                    example: 20,
+                    description: "Items per page",
+                  },
+                  totalCount: {
+                    type: "integer",
+                    example: 45,
+                    description: "Total number of route calls matching filters",
+                  },
+                  totalPages: {
+                    type: "integer",
+                    example: 3,
+                    description: "Total number of pages",
+                  },
+                  hasNextPage: {
+                    type: "boolean",
+                    example: true,
+                    description: "Whether there is a next page",
+                  },
+                  hasPreviousPage: {
+                    type: "boolean",
+                    example: false,
+                    description: "Whether there is a previous page",
+                  },
+                },
               },
             },
           },
