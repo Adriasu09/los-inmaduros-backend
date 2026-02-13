@@ -1,64 +1,71 @@
 # 🛼 Los Inmaduros Backend
 
-API REST profesional para la comunidad de patinadores **Los Inmaduros Rollers Madrid**. Backend completo con autenticación, gestión de rutas, convocatorias, reviews y galería de fotos.
+![Tests](https://img.shields.io/badge/tests-28%20passing-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-40%25-yellow)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
+![Node](https://img.shields.io/badge/Node-18%2B-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-## 🚀 Características Principales
+Professional REST API for the roller skating community **Los Inmaduros Rollers Madrid**. Complete backend with authentication, route management, meetups, reviews, and photo gallery.
 
-- ✅ **Autenticación segura** con Clerk
-- ✅ **Sistema de rutas** predefinidas con niveles de dificultad
-- ✅ **Convocatorias (Route Calls)** con puntos de encuentro
-- ✅ **Sistema de asistencias** a convocatorias
-- ✅ **Reviews y valoraciones** de rutas
-- ✅ **Favoritos** personalizados por usuario
-- ✅ **Galería de fotos** con moderación y Supabase Storage
-- ✅ **Paginación** en todos los endpoints de listados
-- ✅ **Rate limiting** para protección contra ataques
-- ✅ **Validación estricta** con Zod
-- ✅ **Documentación Swagger** completa e interactiva
+## 🚀 Key Features
 
----
-
-## 🛠️ Tecnologías
-
-- **Node.js** + **TypeScript** - Runtime y lenguaje
-- **Express.js** - Framework web
-- **Prisma** - ORM para PostgreSQL
-- **PostgreSQL** - Base de datos relacional
-- **Clerk** - Autenticación y gestión de usuarios
-- **Supabase Storage** - Almacenamiento de imágenes
-- **Zod** - Validación de schemas
-- **Swagger/OpenAPI** - Documentación de API
-- **Express Rate Limit** - Protección contra ataques
+- ✅ **Secure authentication** with Clerk
+- ✅ **Route system** with difficulty levels
+- ✅ **Meetups (Route Calls)** with meeting points
+- ✅ **Attendance system** for meetups
+- ✅ **Reviews and ratings** for routes
+- ✅ **Personalized favorites** per user
+- ✅ **Photo gallery** with moderation and Supabase Storage
+- ✅ **Pagination** on all list endpoints
+- ✅ **Rate limiting** for attack protection
+- ✅ **Strict validation** with Zod
+- ✅ **Complete interactive Swagger documentation**
 
 ---
 
-## 📦 Instalación
+## 🛠️ Tech Stack
 
-### Prerrequisitos
+- **Node.js** + **TypeScript** - Runtime and language
+- **Express.js** - Web framework
+- **Prisma** - ORM for PostgreSQL
+- **PostgreSQL** - Relational database
+- **Clerk** - Authentication and user management
+- **Supabase Storage** - Image storage
+- **Zod** - Schema validation
+- **Swagger/OpenAPI** - API documentation
+- **Express Rate Limit** - Attack protection
+- **Jest** + **Supertest** - Testing framework
 
-- Node.js 18 o superior
-- PostgreSQL 14 o superior
-- Cuenta de Clerk (https://clerk.com)
-- Cuenta de Supabase (https://supabase.com)
+---
 
-### Pasos
+## 📦 Installation
 
-1. **Clonar el repositorio**
+### Prerequisites
+
+- Node.js 18 or higher
+- PostgreSQL 14 or higher
+- Clerk account (https://clerk.com)
+- Supabase account (https://supabase.com)
+
+### Steps
+
+1. **Clone the repository**
 
 ```bash
 git clone https://github.com/Adriasu09/los-inmaduros-backend.git
 cd los-inmaduros-backend
 ```
 
-2. **Instalar dependencias**
+2. **Install dependencies**
 
 ```bash
 npm install
 ```
 
-3. **Configurar variables de entorno**
+3. **Configure environment variables**
 
-Crea un archivo `.env` en la raíz del proyecto:
+Create a `.env` file in the root directory:
 
 ```env
 # Server
@@ -69,141 +76,171 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
 
 # Database
-DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/los_inmaduros
+DATABASE_URL=postgresql://user:password@localhost:5432/los_inmaduros
 
 # Supabase Storage
-SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_ANON_KEY=tu_anon_key_aqui
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_anon_key_here
 
 # Clerk Authentication
-CLERK_SECRET_KEY=sk_test_tu_secret_key
-CLERK_PUBLISHABLE_KEY=pk_test_tu_publishable_key
+CLERK_SECRET_KEY=sk_test_your_secret_key
+CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
 ```
 
-4. **Ejecutar migraciones de Prisma**
+4. **Run Prisma migrations**
 
 ```bash
 npx prisma migrate dev
 ```
 
-5. **Ejecutar el servidor en desarrollo**
+5. **Start development server**
 
 ```bash
 npm run dev
 ```
 
-El servidor estará corriendo en `http://localhost:4000` 🚀
+Server will be running at `http://localhost:4000` 🚀
 
 ---
 
-## 📚 Documentación API
+## 📚 API Documentation
 
-La documentación completa e interactiva está disponible en **Swagger UI**:
+Complete interactive documentation is available at **Swagger UI**:
 
 👉 **http://localhost:4000/api-docs**
 
-### Endpoints Principales
+### Main Endpoints
 
-| Método | Endpoint                           | Descripción                         | Auth |
-| ------ | ---------------------------------- | ----------------------------------- | ---- |
-| `GET`  | `/api/routes`                      | Listar todas las rutas              | No   |
-| `GET`  | `/api/routes/:slug`                | Detalle de ruta con reviews y fotos | No   |
-| `POST` | `/api/routes/:routeId/reviews`     | Crear review                        | Sí   |
-| `GET`  | `/api/route-calls`                 | Listar convocatorias (paginado)     | No   |
-| `POST` | `/api/route-calls`                 | Crear convocatoria                  | Sí   |
-| `POST` | `/api/route-calls/:id/attendances` | Confirmar asistencia                | Sí   |
-| `GET`  | `/api/photos`                      | Listar fotos (paginado)             | No   |
-| `POST` | `/api/photos`                      | Subir foto                          | Sí   |
-| `GET`  | `/api/favorites`                   | Mis rutas favoritas                 | Sí   |
-| `POST` | `/api/routes/:routeId/favorites`   | Añadir a favoritos                  | Sí   |
+| Method | Endpoint                           | Description                | Auth |
+| ------ | ---------------------------------- | -------------------------- | ---- |
+| `GET`  | `/api/routes`                      | List all routes            | No   |
+| `GET`  | `/api/routes/:slug`                | Route details with reviews | No   |
+| `POST` | `/api/routes/:routeId/reviews`     | Create review              | Yes  |
+| `GET`  | `/api/route-calls`                 | List meetups (paginated)   | No   |
+| `POST` | `/api/route-calls`                 | Create meetup              | Yes  |
+| `POST` | `/api/route-calls/:id/attendances` | Confirm attendance         | Yes  |
+| `GET`  | `/api/photos`                      | List photos (paginated)    | No   |
+| `POST` | `/api/photos`                      | Upload photo               | Yes  |
+| `GET`  | `/api/favorites`                   | My favorite routes         | Yes  |
+| `POST` | `/api/routes/:routeId/favorites`   | Add to favorites           | Yes  |
 
 ---
 
-## 🔒 Seguridad
+## 🔒 Security
 
-### Implementaciones de Seguridad
+### Security Implementations
 
 ✅ **Rate Limiting**
 
-- General: 100 peticiones/15 min por IP
-- Autenticación: 5 peticiones/15 min por IP
-- Creación de recursos: 20 peticiones/15 min por IP
+- General: 100 requests/15 min per IP
+- Authentication: 5 requests/15 min per IP
+- Resource creation: 20 requests/15 min per IP
 
-✅ **CORS Configurado**
+✅ **CORS Configuration**
 
-- Solo acepta peticiones del frontend específico
-- Credenciales habilitadas de forma segura
+- Only accepts requests from specific frontend
+- Credentials enabled securely
 
-✅ **Validación Estricta**
+✅ **Strict Validation**
 
-- Todos los inputs validados con Zod
-- UUIDs verificados
-- Fechas futuras en convocatorias
-- URLs de Google Maps verificadas
+- All inputs validated with Zod
+- UUIDs verified
+- Future dates required for meetups
+- Google Maps URLs verified
 
-✅ **Subida de Archivos Segura**
+✅ **Secure File Upload**
 
-- Sanitización de nombres de archivo
-- Validación MIME type vs extensión
-- Límite de 5MB por imagen
-- Solo formatos: JPEG, PNG, GIF, WebP
+- Filename sanitization (prevents path traversal)
+- MIME type vs extension validation
+- 5MB limit per image
+- Only allowed formats: JPEG, PNG, GIF, WebP
 
-✅ **Protección de Datos**
+✅ **Data Protection**
 
-- Errores detallados solo en desarrollo
-- Stack traces ocultos en producción
-- Variables de entorno requeridas
+- Detailed errors only in development
+- Stack traces hidden in production
+- Required environment variables
 
 ---
 
-## 🗄️ Estructura del Proyecto
+## 🧪 Testing
+
+The project includes comprehensive unit tests with **40% coverage**:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run only unit tests
+npm run test:unit
+```
+
+### Test Coverage
+
+- **28 passing tests**
+- **Route calls validation**: 95% coverage
+- **Reviews validation**: 100% coverage
+- **Photos validation**: 73% coverage
+- **Upload middleware**: Path traversal & injection prevention
+
+---
+
+## 🗄️ Project Structure
 
 ```
 los-inmaduros-backend/
 ├── prisma/
-│   ├── migrations/          # Migraciones de base de datos
-│   └── schema.prisma        # Schema de Prisma
+│   ├── migrations/          # Database migrations
+│   └── schema.prisma        # Prisma schema
 ├── src/
-│   ├── config/              # Configuración (env, swagger, supabase)
-│   ├── database/            # Cliente de Prisma
-│   ├── modules/             # Módulos de la aplicación
-│   │   ├── routes/          # Rutas predefinidas
-│   │   ├── route-calls/     # Convocatorias
-│   │   ├── reviews/         # Valoraciones
-│   │   ├── favorites/       # Favoritos
-│   │   ├── attendances/     # Asistencias
-│   │   ├── photos/          # Fotos y galería
-│   │   ├── auth/            # Autenticación
-│   │   └── config/          # Configuración global
-│   ├── shared/              # Código compartido
-│   │   ├── middlewares/     # Rate limiting, validación, auth
+│   ├── __tests__/           # Test files
+│   │   ├── unit/            # Unit tests
+│   │   ├── integration/     # Integration tests
+│   │   └── helpers/         # Test utilities
+│   ├── config/              # Configuration (env, swagger, supabase)
+│   ├── database/            # Prisma client
+│   ├── modules/             # Application modules
+│   │   ├── routes/          # Predefined routes
+│   │   ├── route-calls/     # Meetups
+│   │   ├── reviews/         # Reviews
+│   │   ├── favorites/       # Favorites
+│   │   ├── attendances/     # Attendance
+│   │   ├── photos/          # Photos and gallery
+│   │   ├── auth/            # Authentication
+│   │   └── config/          # Global config
+│   ├── shared/              # Shared code
+│   │   ├── middlewares/     # Rate limiting, validation, auth
 │   │   ├── services/        # Storage, user sync
 │   │   ├── errors/          # Custom errors
-│   │   └── constants/       # Constantes
-│   └── app.ts               # Punto de entrada
-├── .env.example             # Ejemplo de variables de entorno
+│   │   └── constants/       # Constants
+│   └── app.ts               # Entry point
+├── .env.example             # Environment variables example
+├── jest.config.js           # Jest configuration
 ├── package.json
 └── README.md
 ```
 
 ---
 
-## 🎯 Paginación
+## 🎯 Pagination
 
-Todos los endpoints de listados soportan paginación:
+All list endpoints support pagination:
 
-### Parámetros
+### Parameters
 
-- `page`: Número de página (default: 1)
-- `limit`: Items por página (default: 20, max: 100)
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 20, max: 100)
 
-### Ejemplo
+### Example
 
 ```bash
 GET /api/route-calls?page=2&limit=10
 ```
 
-### Respuesta
+### Response
 
 ```json
 {
@@ -222,71 +259,77 @@ GET /api/route-calls?page=2&limit=10
 
 ---
 
-## 🧪 Scripts Disponibles
+## 🧰 Available Scripts
 
 ```bash
-# Desarrollo con hot reload
+# Development with hot reload
 npm run dev
 
-# Compilar TypeScript
+# Compile TypeScript
 npm run build
 
-# Ejecutar en producción
+# Run in production
 npm start
 
-# Ejecutar migraciones de Prisma
+# Run tests with coverage
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run Prisma migrations
 npx prisma migrate dev
 
-# Abrir Prisma Studio
+# Open Prisma Studio
 npx prisma studio
 
-# Generar cliente de Prisma
+# Generate Prisma client
 npx prisma generate
 ```
 
 ---
 
-## 🌐 Despliegue
+## 🌐 Deployment
 
-### Variables de Entorno en Producción
+### Production Environment Variables
 
-Asegúrate de configurar estas variables en tu servicio de hosting (Render, Railway, etc.):
+Make sure to configure these variables in your hosting service (Render, Railway, etc.):
 
 ```env
 NODE_ENV=production
-FRONTEND_URL=https://tu-frontend.vercel.app
-DATABASE_URL=tu_postgresql_production_url
-SUPABASE_URL=tu_supabase_url
-SUPABASE_ANON_KEY=tu_supabase_anon_key
-CLERK_SECRET_KEY=tu_clerk_secret_key
-CLERK_PUBLISHABLE_KEY=tu_clerk_publishable_key
+FRONTEND_URL=https://your-frontend.vercel.app
+DATABASE_URL=your_postgresql_production_url
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 ```
 
-### Recomendaciones
+### Recommendations
 
-- **Backend**: Render.com (plan gratuito)
-- **Base de datos**: Render PostgreSQL o Supabase
+- **Backend**: Render.com (free tier)
+- **Database**: Render PostgreSQL or Supabase
 - **Storage**: Supabase Storage
 
 ---
 
-## 👤 Autor
+## 👤 Author
 
-**Adriana** - Frontend Developer  
-[GitHub](https://github.com/Adriasu09) | [LinkedIn](www.linkedin.com/in/adriana-suárez-4562a5249)
-
----
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+**Adriana Suárez** - Frontend Developer  
+[GitHub](https://github.com/Adriasu09) | [LinkedIn](https://www.linkedin.com/in/adriana-suárez-4562a5249)
 
 ---
 
-## 🤝 Contribuciones
+## 📄 License
 
-Este es un proyecto de portfolio personal, pero sugerencias y feedback son bienvenidos.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Hecho con ❤️ para la comunidad de patinadores Los Inmaduros Rollers Madrid 🛼**
+## 🤝 Contributing
+
+This is a personal portfolio project, but suggestions and feedback are welcome!
+
+---
+
+**Made with ❤️ for the Los Inmaduros Rollers Madrid skating community 🛼**
