@@ -137,3 +137,66 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# ====================
+# Project Specific
+# ====================
+
+# Compiled TypeScript output
+dist/
+build/
+
+# Prisma
+# Keep migrations but ignore local db
+*.db
+*.db-journal
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IDE - JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Operating System
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Uploads (if storing locally instead of Supabase)
+uploads/
+temp-uploads/

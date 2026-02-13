@@ -6,6 +6,7 @@ import {
   createReviewSchema,
 } from "./reviews.validation";
 import { requireAuth } from "../../shared/middlewares/auth.middleware";
+import { creationLimiter } from "../../shared/middlewares/rate-limit.middleware";
 import { registry } from "../../config/openapi-registry";
 import { z } from "zod";
 
@@ -224,6 +225,7 @@ router.get(
 router.post(
   "/",
   requireAuth,
+  creationLimiter,
   validate(createReviewSchema),
   reviewsController.createReview,
 );

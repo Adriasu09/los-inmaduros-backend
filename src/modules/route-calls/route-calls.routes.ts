@@ -11,16 +11,13 @@ import {
 } from "./route-calls.validation";
 import {
   requireAuth,
-  requireAdmin,
 } from "../../shared/middlewares/auth.middleware";
+import { creationLimiter } from "../../shared/middlewares/rate-limit.middleware";
 import { registry } from "../../config/openapi-registry";
 import { z } from "zod";
 
 // Import schemas to register them in OpenAPI registry
 import {
-  createRouteCallBodySchema,
-  updateRouteCallBodySchema,
-  routeCallResponseSchema,
   RouteCallStatusEnum,
 } from "./route-calls.validation";
 
@@ -533,6 +530,7 @@ registry.registerPath({
 router.post(
   "/",
   requireAuth,
+  creationLimiter,
   validate(createRouteCallSchema),
   routeCallsController.createRouteCall,
 );

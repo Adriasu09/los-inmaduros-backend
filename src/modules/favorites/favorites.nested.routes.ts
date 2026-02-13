@@ -6,6 +6,7 @@ import {
   removeFavoriteSchema,
 } from "./favorites.validation";
 import { requireAuth } from "../../shared/middlewares/auth.middleware";
+import { creationLimiter } from "../../shared/middlewares/rate-limit.middleware";
 import { registry } from "../../config/openapi-registry";
 import { z } from "zod";
 
@@ -175,6 +176,7 @@ registry.registerPath({
 router.post(
   "/",
   requireAuth,
+  creationLimiter,
   validate(addFavoriteSchema),
   favoritesController.addFavorite,
 );
