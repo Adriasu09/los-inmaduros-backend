@@ -1,5 +1,6 @@
 # 🛼 Los Inmaduros Backend
 
+![CI](https://github.com/Adriasu09/los-inmaduros-backend/workflows/CI/badge.svg)
 ![Tests](https://img.shields.io/badge/tests-28%20passing-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-40%25-yellow)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
