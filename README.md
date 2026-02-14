@@ -3,7 +3,8 @@
 ![Tests](https://img.shields.io/badge/tests-28%20passing-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-40%25-yellow)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
-![Node](https://img.shields.io/badge/Node-18%2B-green)
+![Node](https://img.shields.io/badge/Node-20%2B-green)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 Professional REST API for the roller skating community **Los Inmaduros Rollers Madrid**. Complete backend with authentication, route management, meetups, reviews, and photo gallery.
@@ -21,6 +22,7 @@ Professional REST API for the roller skating community **Los Inmaduros Rollers M
 - ✅ **Rate limiting** for attack protection
 - ✅ **Strict validation** with Zod
 - ✅ **Complete interactive Swagger documentation**
+- ✅ **Docker support** for easy deployment
 
 ---
 
@@ -30,6 +32,7 @@ Professional REST API for the roller skating community **Los Inmaduros Rollers M
 - **Express.js** - Web framework
 - **Prisma** - ORM for PostgreSQL
 - **PostgreSQL** - Relational database
+- **Docker** + **Docker Compose** - Containerization
 - **Clerk** - Authentication and user management
 - **Supabase Storage** - Image storage
 - **Zod** - Schema validation
@@ -43,27 +46,106 @@ Professional REST API for the roller skating community **Los Inmaduros Rollers M
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- **Docker & Docker Compose** (Recommended) - [Install Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+**OR**
+
+- Node.js 20+ or higher
 - PostgreSQL 14 or higher
 - Clerk account (https://clerk.com)
 - Supabase account (https://supabase.com)
 
-### Steps
+---
 
-1. **Clone the repository**
+### 🐳 Quick Start with Docker (Recommended)
+
+The easiest way to run the project is with Docker. Everything is configured automatically.
+
+**1. Clone the repository**
 
 ```bash
 git clone https://github.com/Adriasu09/los-inmaduros-backend.git
 cd los-inmaduros-backend
 ```
 
-2. **Install dependencies**
+**2. Create `.env` file**
+
+Copy `.env.example` to `.env` and fill in your Clerk and Supabase credentials:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your credentials:
+
+```env
+CLERK_SECRET_KEY=your_clerk_secret_key
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+**3. Start with Docker Compose**
+
+```bash
+npm run docker:dev
+```
+
+Or directly:
+
+```bash
+docker-compose up --build
+```
+
+**That's it!** 🚀
+
+- Backend: http://localhost:4000
+- API Docs: http://localhost:4000/api-docs
+- PostgreSQL: localhost:5432
+
+**Docker automatically:**
+
+- ✅ Sets up PostgreSQL database
+- ✅ Runs Prisma migrations
+- ✅ Installs dependencies
+- ✅ Starts the server with hot reload
+
+**Useful Docker commands:**
+
+```bash
+# Stop containers
+npm run docker:dev:down
+
+# View logs
+npm run docker:logs
+
+# Rebuild from scratch
+docker-compose down -v && docker-compose up --build
+
+# Stop and remove everything
+docker-compose down -v
+```
+
+---
+
+### 💻 Manual Installation (Without Docker)
+
+If you prefer to run without Docker:
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/Adriasu09/los-inmaduros-backend.git
+cd los-inmaduros-backend
+```
+
+**2. Install dependencies**
 
 ```bash
 npm install
 ```
 
-3. **Configure environment variables**
+**3. Configure environment variables**
 
 Create a `.env` file in the root directory:
 
@@ -87,13 +169,13 @@ CLERK_SECRET_KEY=sk_test_your_secret_key
 CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
 ```
 
-4. **Run Prisma migrations**
+**4. Run Prisma migrations**
 
 ```bash
 npx prisma migrate dev
 ```
 
-5. **Start development server**
+**5. Start development server**
 
 ```bash
 npm run dev
@@ -217,6 +299,10 @@ los-inmaduros-backend/
 │   │   ├── errors/          # Custom errors
 │   │   └── constants/       # Constants
 │   └── app.ts               # Entry point
+├── Dockerfile               # Docker configuration
+├── docker-compose.yml       # Docker Compose for development
+├── docker-compose.prod.yml  # Docker Compose for production
+├── .dockerignore            # Docker ignore file
 ├── .env.example             # Environment variables example
 ├── jest.config.js           # Jest configuration
 ├── package.json
@@ -277,14 +363,16 @@ npm test
 # Run tests in watch mode
 npm run test:watch
 
-# Run Prisma migrations
-npx prisma migrate dev
+# Docker commands
+npm run docker:dev         # Start with Docker
+npm run docker:dev:down    # Stop Docker containers
+npm run docker:logs        # View Docker logs
+npm run docker:prod        # Production mode
 
-# Open Prisma Studio
-npx prisma studio
-
-# Generate Prisma client
-npx prisma generate
+# Prisma commands
+npx prisma migrate dev     # Run migrations
+npx prisma studio          # Open Prisma Studio
+npx prisma generate        # Generate Prisma client
 ```
 
 ---
@@ -307,9 +395,13 @@ CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 
 ### Recommendations
 
-- **Backend**: Render.com (free tier)
+- **Backend**: Render.com (free tier) - Docker supported
 - **Database**: Render PostgreSQL or Supabase
 - **Storage**: Supabase Storage
+
+### Deploy with Docker
+
+This project includes Docker support for easy deployment to any platform that supports containers (Render, Railway, Fly.io, etc.).
 
 ---
 

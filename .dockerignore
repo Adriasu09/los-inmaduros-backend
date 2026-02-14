@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Testing
+coverage
+*.test.ts
+__tests__
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build
+dist
+
+# Documentation
+README.md
+
+# Misc
+.DS_Store
+Thumbs.db
