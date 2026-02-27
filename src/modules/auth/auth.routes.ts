@@ -1,9 +1,11 @@
 import { Router, Request, Response } from "express";
-import { clerkClient } from "@clerk/clerk-sdk-node";
+import { createClerkClient } from "@clerk/express";
+import { CLERK_SECRET_KEY } from "../../config/env.config";
 import { registry } from "../../config/openapi-registry";
 import { NODE_ENV } from "../../config/env.config";
 
 const router = Router();
+const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 
 /**
  * Register OpenAPI paths

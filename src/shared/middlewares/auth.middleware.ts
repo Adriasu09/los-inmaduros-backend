@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { clerkClient } from "@clerk/clerk-sdk-node";
+import { createClerkClient, verifyToken } from "@clerk/express";
 import { CLERK_SECRET_KEY } from "../../config/env.config";
 import { UnauthorizedError } from "../errors/custom-errors";
 import { UserSyncService } from "../services/user-sync.service";
 
 const userSyncService = new UserSyncService();
+const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 
 // Extend Express Request type to include auth data
 declare global {
@@ -39,7 +40,7 @@ export const requireAuth = async (
     const token = authHeader.substring(7); // Remove "Bearer " prefix
 
     // Verify token with Clerk
-    const sessionClaims = await clerkClient.verifyToken(token, {
+    const sessionClaims = await verifyToken(token, {
       secretKey: CLERK_SECRET_KEY,
     });
 
@@ -108,7 +109,7 @@ export const optionalAuth = async (
 
     const token = authHeader.substring(7);
 
-    const sessionClaims = await clerkClient.verifyToken(token, {
+    const sessionClaims = await verifyToken(token, {
       secretKey: CLERK_SECRET_KEY,
     });
 
