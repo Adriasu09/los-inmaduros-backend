@@ -1,5 +1,8 @@
 import { prisma } from "../../database/prisma.client";
-import { clerkClient } from "@clerk/clerk-sdk-node";
+import { createClerkClient } from "@clerk/express";
+import { CLERK_SECRET_KEY } from "../../config/env.config";
+
+const clerkClient = createClerkClient({ secretKey: CLERK_SECRET_KEY });
 
 export class UserSyncService {
   /**
