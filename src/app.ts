@@ -42,7 +42,7 @@ const app: Application = express();
 // CORS - Allow requests from frontend
 app.use(
   cors({
-    origin: FRONTEND_URL || "http://localhost:3000",
+    origin: [FRONTEND_URL, "http://localhost:3000"].filter((o): o is string => Boolean(o)),
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
