@@ -200,3 +200,6 @@ coverage/
 # Uploads (if storing locally instead of Supabase)
 uploads/
 temp-uploads/
+
+# Prisma seeds (if storing GPX files locally instead of Supabase)
+prisma/seeds/gpx/
