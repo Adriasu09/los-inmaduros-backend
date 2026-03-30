@@ -55,7 +55,7 @@ export class RouteCallsService {
         description: data.description || null,
         image: image,
         dateRoute: new Date(data.dateRoute),
-        pace: data.pace,
+        paces: data.paces,
         status: "SCHEDULED",
         meetingPoints: {
           create: data.meetingPoints.map((point) => ({
@@ -302,7 +302,7 @@ export class RouteCallsService {
         }),
         ...(data.image !== undefined && { image: data.image }),
         ...(data.dateRoute && { dateRoute: new Date(data.dateRoute) }),
-        ...(data.pace && { pace: data.pace }),
+        ...(data.paces && { paces: data.paces }),
       },
       include: {
         route: true,

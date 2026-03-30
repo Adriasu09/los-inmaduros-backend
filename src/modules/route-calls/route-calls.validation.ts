@@ -113,7 +113,7 @@ const routeCallResponseSchema = registry.register(
         .string()
         .datetime()
         .openapi({ example: "2026-02-15T10:00:00Z" }),
-      pace: RoutePaceEnum.openapi({ example: "MARIPOSA" }),
+      paces: z.array(RoutePaceEnum).openapi({ example: ["MARIPOSA"] }),
       status: RouteCallStatusEnum.openapi({ example: "SCHEDULED" }),
       createdAt: z
         .string()
@@ -203,7 +203,11 @@ const createRouteCallBodySchema = registry.register(
             "Date and time of the route call (must be in the future)",
           example: "2026-02-15T10:00:00Z",
         }),
-      pace: RoutePaceEnum.openapi({ example: "MARIPOSA" }),
+      paces: z
+        .array(RoutePaceEnum)
+        .min(1, "At least one pace is required")
+        .max(7, "Maximum 7 paces allowed")
+        .openapi({ example: ["MARIPOSA", "GUSANO"] }),
       meetingPoints: z
         .array(meetingPointSchema)
         .min(1, "At least one meeting point is required")
@@ -281,7 +285,12 @@ const updateRouteCallBodySchema = registry.register(
         .datetime("Must be a valid ISO datetime")
         .optional()
         .openapi({ example: "2026-02-16T11:00:00Z" }),
-      pace: RoutePaceEnum.optional().openapi({ example: "GUSANO" }),
+      paces: z
+        .array(RoutePaceEnum)
+        .min(1)
+        .max(7)
+        .optional()
+        .openapi({ example: ["GUSANO"] }),
     })
     .openapi({
       description: "Data to update a route call",
@@ -347,7 +356,7 @@ export const deleteRouteCallSchema = z.object({
 export type CreateRouteCallInput = z.infer<typeof createRouteCallBodySchema>;
 export type UpdateRouteCallInput = z.infer<typeof updateRouteCallBodySchema>;
 export type MeetingPointInput = z.infer<typeof meetingPointSchema>;
-export type RoutePace = z.infer<typeof RoutePaceEnum>;
+export type RoutePaceValue = z.infer<typeof RoutePaceEnum>;
 export type RouteCallStatus = z.infer<typeof RouteCallStatusEnum>;
 
 // Export schemas for OpenAPI documentation
