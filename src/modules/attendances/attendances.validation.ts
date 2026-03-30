@@ -102,5 +102,11 @@ export const getRouteCallAttendancesSchema = z.object({
   }),
 });
 
+export const checkAttendanceSchema = z.object({
+  params: z.object({
+    routeCallId: z.string().uuid("Must be a valid UUID"),
+  }),
+});
+
 // Export schemas for OpenAPI documentation
 export { attendanceResponseSchema };

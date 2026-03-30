@@ -92,6 +92,33 @@ export class AttendancesController {
   };
 
   /**
+   * GET /api/route-calls/:routeCallId/attendances/check
+   * Check if the authenticated user is attending a route call
+   */
+  checkAttendance = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const routeCallId = req.params.routeCallId as string;
+      const userId = req.auth!.userId;
+
+      const result = await this.attendancesService.checkAttendance(
+        userId,
+        routeCallId,
+      );
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
    * GET /api/attendances/my-attendances
    * Get all attendances for the authenticated user
    */

@@ -63,7 +63,7 @@ export class AttendancesService {
               id: true,
               title: true,
               dateRoute: true,
-              pace: true,
+              paces: true,
               status: true,
             },
           },
@@ -93,7 +93,7 @@ export class AttendancesService {
             id: true,
             title: true,
             dateRoute: true,
-            pace: true,
+            paces: true,
             status: true,
           },
         },
@@ -195,6 +195,24 @@ export class AttendancesService {
     });
 
     return attendances;
+  }
+
+  /**
+   * Check if a user is attending a route call
+   */
+  async checkAttendance(userId: string, routeCallId: string) {
+    const attendance = await prisma.attendance.findUnique({
+      where: {
+        routeCallId_userId: {
+          routeCallId,
+          userId,
+        },
+      },
+    });
+
+    return {
+      isAttending: !!attendance && attendance.status === "CONFIRMED",
+    };
   }
 
   /**

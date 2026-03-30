@@ -5,6 +5,7 @@ import {
   confirmAttendanceSchema,
   cancelAttendanceSchema,
   getRouteCallAttendancesSchema,
+  checkAttendanceSchema,
 } from "./attendances.validation";
 import { requireAuth } from "../../shared/middlewares/auth.middleware";
 import { creationLimiter } from "../../shared/middlewares/rate-limit.middleware";
@@ -265,9 +266,71 @@ registry.registerPath({
   },
 });
 
+// GET /api/route-calls/:routeCallId/attendances/check
+registry.registerPath({
+  method: "get",
+  path: "/api/route-calls/{routeCallId}/attendances/check",
+  tags: ["Attendances"],
+  summary: "Check attendance status",
+  description:
+    "Check if the authenticated user is attending a specific route call.",
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      routeCallId: z.string().uuid().openapi({
+        description: "ID of the route call",
+        example: "987e6543-e21b-12d3-a456-426614174000",
+      }),
+    }),
+  },
+  responses: {
+    200: {
+      description: "Attendance status retrieved successfully",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: true },
+              data: {
+                type: "object",
+                properties: {
+                  isAttending: { type: "boolean", example: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    401: {
+      description: "Unauthorized - Invalid or missing token",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: { type: "boolean", example: false },
+              error: { type: "string", example: "Unauthorized" },
+            },
+          },
+        },
+      },
+    },
+  },
+});
+
 /**
  * Express routes
  */
+
+// GET /api/route-calls/:routeCallId/attendances/check (MUST be before "/" routes)
+router.get(
+  "/check",
+  requireAuth,
+  validate(checkAttendanceSchema),
+  attendancesController.checkAttendance,
+);
 
 // POST /api/route-calls/:routeCallId/attendances
 router.post(
