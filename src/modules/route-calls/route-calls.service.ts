@@ -9,13 +9,17 @@ import {
   UpdateRouteCallInput,
 } from "./route-calls.validation";
 
+// Default cover image for route calls when no custom image is provided
+const DEFAULT_ROUTE_CALL_IMAGE =
+  "https://res.cloudinary.com/dj4j3uoia/image/upload/v1726855799/otraRuta_az0ggq.jpg";
+
 export class RouteCallsService {
   /**
    * Create a new route call with meeting points
    */
   async createRouteCall(organizerId: string, data: CreateRouteCallInput) {
     let title: string;
-    let image: string | null;
+    let image: string;
 
     // If routeId is provided, get route name and image
     if (data.routeId) {
@@ -31,15 +35,15 @@ export class RouteCallsService {
       // Use route's name as title (ignore provided title for predefined routes)
       title = route.name;
       // Use route's image as default (can be overridden by data.image)
-      image = data.image || route.image;
+      image = data.image || route.image || DEFAULT_ROUTE_CALL_IMAGE;
     } else {
       // Custom route: title is required
       if (!data.title) {
         throw new BadRequestError("Title is required for custom routes");
       }
       title = data.title;
-      // Use provided image or null (cover photo can be uploaded separately)
-      image = data.image || null;
+      // Use provided image or default placeholder
+      image = data.image || DEFAULT_ROUTE_CALL_IMAGE;
     }
 
     // Create route call with meeting points
