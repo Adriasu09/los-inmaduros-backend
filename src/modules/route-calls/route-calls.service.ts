@@ -9,17 +9,13 @@ import {
   UpdateRouteCallInput,
 } from "./route-calls.validation";
 
-// Default image for custom routes without image
-const DEFAULT_ROUTE_CALL_IMAGE =
-  "https://images.unsplash.com/photo-1564783436897-4c044a6d9c56?w=800";
-
 export class RouteCallsService {
   /**
    * Create a new route call with meeting points
    */
   async createRouteCall(organizerId: string, data: CreateRouteCallInput) {
     let title: string;
-    let image: string;
+    let image: string | null;
 
     // If routeId is provided, get route name and image
     if (data.routeId) {
@@ -42,8 +38,8 @@ export class RouteCallsService {
         throw new BadRequestError("Title is required for custom routes");
       }
       title = data.title;
-      // Use provided image or default placeholder
-      image = data.image || DEFAULT_ROUTE_CALL_IMAGE;
+      // Use provided image or null (cover photo can be uploaded separately)
+      image = data.image || null;
     }
 
     // Create route call with meeting points
