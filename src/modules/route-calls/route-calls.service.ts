@@ -9,9 +9,9 @@ import {
   UpdateRouteCallInput,
 } from "./route-calls.validation";
 
-// Default image for custom routes without image
+// Default cover image for route calls when no custom image is provided
 const DEFAULT_ROUTE_CALL_IMAGE =
-  "https://images.unsplash.com/photo-1564783436897-4c044a6d9c56?w=800";
+  "https://res.cloudinary.com/dj4j3uoia/image/upload/v1726855799/otraRuta_az0ggq.jpg";
 
 export class RouteCallsService {
   /**
@@ -35,7 +35,7 @@ export class RouteCallsService {
       // Use route's name as title (ignore provided title for predefined routes)
       title = route.name;
       // Use route's image as default (can be overridden by data.image)
-      image = data.image || route.image;
+      image = data.image || route.image || DEFAULT_ROUTE_CALL_IMAGE;
     } else {
       // Custom route: title is required
       if (!data.title) {

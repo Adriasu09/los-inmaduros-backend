@@ -123,6 +123,14 @@ export class PhotosService {
       },
     });
 
+    // If this is a cover photo, also update the route call's image field
+    if (data.context === "ROUTE_CALL_COVER" && data.routeCallId) {
+      await prisma.routeCall.update({
+        where: { id: data.routeCallId },
+        data: { image: imageUrl },
+      });
+    }
+
     return photo;
   }
 
@@ -161,6 +169,12 @@ export class PhotosService {
         routeCallId,
         context: "ROUTE_CALL_COVER",
       },
+    });
+
+    // Update the route call's image field with the new cover URL
+    await prisma.routeCall.update({
+      where: { id: routeCallId },
+      data: { image: imageUrl },
     });
 
     if (existingCover) {

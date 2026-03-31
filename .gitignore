@@ -203,3 +203,5 @@ temp-uploads/
 
 # Prisma seeds (if storing GPX files locally instead of Supabase)
 prisma/seeds/gpx/
+
+.vscode
