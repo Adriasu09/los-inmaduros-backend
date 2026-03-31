@@ -4,6 +4,7 @@ import {
   CreateRouteCallInput,
   UpdateRouteCallInput,
 } from "./route-calls.validation";
+import { env } from "../../config/env.config";
 
 export class RouteCallsController {
   private routeCallsService: RouteCallsService;
@@ -32,6 +33,41 @@ export class RouteCallsController {
         data: routeCall,
         message: "Route call created successfully",
       });
+
+      const webhookUrl = env.N8N_ROUTE_CALLS_WEBHOOK_URL;
+
+      if (webhookUrl) {
+        setImmediate(() => {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 2000);
+
+          void fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              event: "route_call_created",
+              data: routeCall,
+            }),
+            signal: controller.signal,
+          })
+            .then(async (response) => {
+              if (response.ok) return;
+              const text = await response.text().catch(() => "");
+              console.error(
+                "Webhook n8n respondió con error",
+                response.status,
+                text,
+              );
+            })
+            .catch((error) => {
+              if (error?.name === "AbortError") return;
+              console.error("Error enviando webhook a n8n:", error);
+            })
+            .finally(() => clearTimeout(timeout));
+        });
+      }
     } catch (error) {
       next(error);
     }
