@@ -10,6 +10,7 @@ export const SUPABASE_URL = process.env.SUPABASE_URL;
 export const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 export const NODE_ENV = process.env.NODE_ENV || "development";
 export const FRONTEND_URL = process.env.FRONTEND_URL;
+export const N8N_ROUTE_CALLS_WEBHOOK_URL = process.env.N8N_ROUTE_CALLS_WEBHOOK_URL;
 
 function getPort(): number {
   const port = parseInt(process.env.PORT || "4000", 10);
@@ -52,4 +53,5 @@ export const env = {
   CLERK_PUBLISHABLE_KEY,
   SUPABASE_URL,
   SUPABASE_ANON_KEY,
+  N8N_ROUTE_CALLS_WEBHOOK_URL,
 };
