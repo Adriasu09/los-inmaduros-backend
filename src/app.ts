@@ -38,6 +38,9 @@ validateEnv();
 // Create Express application
 const app: Application = express();
 
+// Trust first proxy (needed for express-rate-limit behind Traefik/reverse proxy)
+app.set("trust proxy", 1);
+
 // ==================== MIDDLEWARES ====================
 // CORS - Allow requests from frontend
 app.use(
