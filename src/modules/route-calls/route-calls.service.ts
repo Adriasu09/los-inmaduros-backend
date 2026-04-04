@@ -136,24 +136,19 @@ export class RouteCallsService {
 
     // Filter by upcoming/past
     if (filters?.upcoming === "true") {
-      where.dateRoute = {
-        gte: new Date(), // Greater than or equal to now
-      };
-      where.status = {
-        in: ["SCHEDULED", "ONGOING"],
-      };
-    } else if (filters?.upcoming === "false") {
+      const now = new Date();
+      const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
       where.OR = [
-        {
-          dateRoute: {
-            lt: new Date(), // Less than now
-          },
-        },
-        {
-          status: {
-            in: ["COMPLETED", "CANCELLED"],
-          },
-        },
+        { status: "SCHEDULED" },
+        { status: "ONGOING" },
+        { status: "CANCELLED", dateRoute: { gte: twoHoursAgo } },
+      ];
+    } else if (filters?.upcoming === "false") {
+      const now = new Date();
+      const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+      where.OR = [
+        { status: "COMPLETED" },
+        { status: "CANCELLED", dateRoute: { lt: twoHoursAgo } },
       ];
     }
 
@@ -286,6 +281,14 @@ export class RouteCallsService {
 
     if (!routeCall) {
       throw new NotFoundError("Route call not found");
+    }
+
+    // Cannot update completed or cancelled route calls
+    if (routeCall.status === "COMPLETED") {
+      throw new BadRequestError("Cannot update a completed route call");
+    }
+    if (routeCall.status === "CANCELLED") {
+      throw new BadRequestError("Cannot update a cancelled route call");
     }
 
     // Check permissions: only organizer can update

@@ -32,6 +32,9 @@ import {
   authLimiter,
 } from "./shared/middlewares/rate-limit.middleware";
 
+// Import scheduler
+import { initRouteCallScheduler } from "./shared/services/route-call-scheduler.service";
+
 // Validate environment variables
 validateEnv();
 
@@ -123,6 +126,9 @@ async function startServer() {
   try {
     // Connect to database
     await connectDatabase();
+
+    // Initialize automatic route call status transitions
+    initRouteCallScheduler();
 
     // Start server
     app.listen(PORT, () => {
