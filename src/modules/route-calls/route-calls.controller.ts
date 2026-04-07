@@ -83,6 +83,8 @@ export class RouteCallsController {
       organizerId?: string;
       upcoming?: string;
       routeId?: string;
+      pace?: string;
+      month?: string;
       page?: number;
       limit?: number;
     };

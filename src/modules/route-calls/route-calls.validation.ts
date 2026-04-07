@@ -310,6 +310,11 @@ export const getRouteCallsSchema = z.object({
     organizerId: z.string().uuid("Must be a valid UUID").optional(),
     upcoming: z.enum(["true", "false"]).optional(),
     routeId: z.string().uuid("Must be a valid UUID").optional(),
+    pace: RoutePaceEnum.optional(),
+    month: z
+      .string()
+      .regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Format must be YYYY-MM")
+      .optional(),
     page: z
       .string()
       .regex(/^\d+$/, "Page must be a positive number")

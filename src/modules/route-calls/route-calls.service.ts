@@ -109,6 +109,8 @@ export class RouteCallsService {
     organizerId?: string;
     upcoming?: string;
     routeId?: string;
+    pace?: string;
+    month?: string;
     page?: number;
     limit?: number;
   }) {
@@ -150,6 +152,23 @@ export class RouteCallsService {
         { status: "COMPLETED" },
         { status: "CANCELLED", dateRoute: { lt: twoHoursAgo } },
       ];
+    }
+
+    // Filter by pace (paces is an array field, use `has` to check if it contains the value)
+    if (filters?.pace) {
+      where.paces = { has: filters.pace };
+    }
+
+    // Filter by month (dateRoute within the given YYYY-MM range)
+    if (filters?.month) {
+      const [year, month] = filters.month.split("-").map(Number);
+      const startOfMonth = new Date(year, month - 1, 1);
+      const startOfNextMonth = new Date(year, month, 1);
+      where.dateRoute = {
+        ...where.dateRoute,
+        gte: startOfMonth,
+        lt: startOfNextMonth,
+      };
     }
 
     // Get total count for pagination metadata
